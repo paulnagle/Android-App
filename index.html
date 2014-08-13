@@ -1,124 +1,124 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="cache-control" content="max-age=0" />
-		<meta http-equiv="cache-control" content="no-cache" />
-		<meta http-equiv="expires" content="0" />
-		<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-		<meta http-equiv="pragma" content="no-cache" />
-		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<title>Meeting Locations</title>
-		
-		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojox/mobile/themes/iphone/iphone.css" />
-		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-		<link rel="stylesheet" href="css/MarkerCluster.css" />
-		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
-		
-		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>	
-		<script src="js/leaflet.markercluster-src.js"></script>
-		<script src="js/Leaflet.MakiMarkers.js"></script>
-		<script src="js/spin.min.js"></script>
-		<script src="js/leaflet.spin.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
-		<script src="js/main.js"></script>		
-	</head>
-	<body>
-		<div id="homepage" dojoType="dojox.mobile.View" selected="true">
-			<h1 dojoType="dojox/mobile/Heading">Meeting Locations</h1>
-			<ul dojoType="dojox/mobile/RoundRectList">
-				<li id="search_all" dojoType="dojox.mobile.ListItem" icon="img/search-29x29.png"  moveTo="search">
-					Search For Meetings 
-				</li>
-				<li id="search_today" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
-					Find Meetings Today 
-				</li>
-				<li id="search_tomorrow" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png" moveTo="search">
-					Find Meetings Tomorrow
-				</li>
-				<li dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="settings">
-					Settings
-				</li>
-			</ul>
-		</div>
-
-		<div id="settings" dojoType="dojox/mobile/ScrollableView">
-			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Settings</h1>
-			<ul dojoType="dojox/mobile/RoundRectList">
-				<div id="search-radius" dojoType="dojox.mobile.View">	
-					<div>
-						<label><b>Go to current GPS Position</b></label>
-						<fieldset><button id="locResetBtn" type="button"></button><div id="locResult"></div></fieldset>
-					</div>
-					<div>
-						<label><b>Set Search Radius</b></label>
-						<div id="radiusLabel"><label></label></div>
-						<fieldset><table width="100%"><tr><td>0km</td><td><pre id="sliderHere"></pre></td><td>150km</td></tr></table></fieldset>	
-					</div>
-					<div data-dojo-type="dojox/mobile/FormLayout" data-dojo-props="columns:'two'">
-						<label><b>Set Search Day</b></label>
-						<div>			
-							<label>Sunday</label>
-							<fieldset><pre id="SunSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Monday</label>
-							<fieldset><pre id="MonSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Tuesday</label>
-							<fieldset><pre id="TueSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Wednesday</label>
-							<fieldset><pre id="WedSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Thursday</label>
-							<fieldset><pre id="ThuSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Friday</label>
-							<fieldset><pre id="FriSwitchHere"></pre></fieldset>
-						</div>
-						<div>
-							<label>Saturday</label>
-							<fieldset><pre id="SatSwitchHere"></pre></fieldset>
-						</div>
-					</div>
-				</div>
-			</ul>
-			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search1" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:false'>Map</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search-list", icon1:"img/list_icon-29x29.png", selected:false'>List</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:true'>Settings</li>
-			</ul>
-		</div>
-		
-		<div id="search" dojoType="dojox/mobile/ScrollableView">
-			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Search</h1>	
-			<div data-dojo-type="dojox/mobile/RoundRect" data-dojo-props='shadow:true'>
-       			<div id="map_canvas" style="width: 100%, height: 180px"></div>
-   			</div>
-			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search2" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:true'>Map</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search-list", icon1:"img/list_icon-29x29.png", selected:false'>List</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:false'>Settings</li>
-			</ul>
-		</div>
-
-		<div id="search-list" dojoType="dojox/mobile/ScrollableView">
-			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Search</h1>
-       		<div id="search-list-result" >
-				<div id="list_heading"></div>
-				<pre id="output"></pre>
-			</div>  			
-			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search3" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:false'>Map</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"view2", icon1:"img/list_icon-29x29.png", selected:true'>List</li>
-				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:false'>Settings</li>
-			</ul>
-		</div>
-		
-	</body>
-</html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="cache-control" content="max-age=0" />
+		<meta http-equiv="cache-control" content="no-cache" />
+		<meta http-equiv="expires" content="0" />
+		<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+		<meta http-equiv="pragma" content="no-cache" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<title>Meeting Locations</title>
+		
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojox/mobile/themes/iphone/iphone.css" />
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<link rel="stylesheet" href="css/MarkerCluster.css" />
+		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+		
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>	
+		<script src="js/leaflet.markercluster-src.js"></script>
+		<script src="js/Leaflet.MakiMarkers.js"></script>
+		<script src="js/spin.min.js"></script>
+		<script src="js/leaflet.spin.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
+		<script src="js/main.js"></script>		
+	</head>
+	<body>
+		<div id="homepage" dojoType="dojox.mobile.View" selected="true">
+			<h1 dojoType="dojox/mobile/Heading">Meeting Locations</h1>
+			<ul dojoType="dojox/mobile/RoundRectList">
+				<li id="search_all" dojoType="dojox.mobile.ListItem" icon="img/search-29x29.png"  moveTo="search">
+					Search For Meetings 
+				</li>
+				<li id="search_today" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
+					Find Meetings Today 
+				</li>
+				<li id="search_tomorrow" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png" moveTo="search">
+					Find Meetings Tomorrow
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="settings">
+					Settings
+				</li>
+			</ul>
+		</div>
+
+		<div id="settings" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Settings</h1>
+			<ul dojoType="dojox/mobile/RoundRectList">
+				<div id="search-radius" dojoType="dojox.mobile.View">	
+					<div>
+						<label><b>Go to current GPS Position</b></label>
+						<fieldset><button id="locResetBtn" type="button"></button><div id="locResult"></div></fieldset>
+					</div>
+					<div>
+						<label><b>Set Search Radius</b></label>
+						<div id="radiusLabel"><label>Search Radius = 10km</label></div>
+						<fieldset><table width="100%"><tr><td width="10%">0km</td><td><pre id="sliderHere"></pre></td><td width="10%">150km</td></tr></table></fieldset>	
+					</div>
+					<div data-dojo-type="dojox/mobile/FormLayout" data-dojo-props="columns:'two'">
+						<label><b>Set Search Day</b></label>
+						<div>			
+							<label>Sunday</label>
+							<fieldset><pre id="SunSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Monday</label>
+							<fieldset><pre id="MonSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Tuesday</label>
+							<fieldset><pre id="TueSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Wednesday</label>
+							<fieldset><pre id="WedSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Thursday</label>
+							<fieldset><pre id="ThuSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Friday</label>
+							<fieldset><pre id="FriSwitchHere"></pre></fieldset>
+						</div>
+						<div>
+							<label>Saturday</label>
+							<fieldset><pre id="SatSwitchHere"></pre></fieldset>
+						</div>
+					</div>
+				</div>
+			</ul>
+			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
+				<li id="tab-search1" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:false'>Map</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search-list", icon1:"img/list_icon-29x29.png", selected:false'>List</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:true'>Settings</li>
+			</ul>
+		</div>
+		
+		<div id="search" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Search</h1>	
+			<div data-dojo-type="dojox/mobile/RoundRect" data-dojo-props='shadow:true'>
+       			<div id="map_canvas" style="width: 100%, height: 180px"></div>
+   			</div>
+			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
+				<li id="tab-search2" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:true'>Map</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search-list", icon1:"img/list_icon-29x29.png", selected:false'>List</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:false'>Settings</li>
+			</ul>
+		</div>
+
+		<div id="search-list" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Search</h1>
+       		<div id="search-list-result" >
+				<div id="list_heading"></div>
+				<pre id="output"></pre>
+			</div>  			
+			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
+				<li id="tab-search3" data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"search", icon1:"img/map_icon-29x29.png", selected:false'>Map</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"view2", icon1:"img/list_icon-29x29.png", selected:true'>List</li>
+				<li data-dojo-type="dojox/mobile/TabBarButton" data-dojo-props='moveTo:"settings", icon1:"img/settings-29x29.jpg", selected:false'>Settings</li>
+			</ul>
+		</div>
+		
+	</body>
+</html>

@@ -69,7 +69,7 @@ function initMap () {
 
 		currentLocationMarker.on('dragend', function(e){
 			myLatLng = e.target.getLatLng();
-			refreshMap();
+			refreshMap("all");
 		});
 		
 		if (circle) {
@@ -86,7 +86,7 @@ function initMap () {
 
 		currentLocationMarker.on('dragend', function(e){
 			myLatLng = e.target.getLatLng();
-			refreshMap();
+			refreshMap("all");
 		});
 		
 		if (circle) {
@@ -127,7 +127,7 @@ function getCurrentGPSLocation() {
 		myLatLng = L.latLng(location.coords.latitude, location.coords.longitude);
 		document.getElementById("locResult").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;
 		currentLocationMarker.setLatLng(myLatLng);
-		refreshMap();
+		refreshMap("all");
 	}
 }
 

@@ -38,11 +38,15 @@ function spinMap(spinFlag) {
 	if (spinFlag == true ) {
 		console.log("****spinning map => " + spinFlag);
 		map.spin(true);
-		currentLocationMarker.setOpacity(0);
+		if (currentLocationMarker) {
+			currentLocationMarker.setOpacity(0);
+		}
 	} else {
 		console.log("****spinning map => " + spinFlag);
 		map.spin(false);
-		currentLocationMarker.setOpacity(1);
+		if (currentLocationMarker) {
+			currentLocationMarker.setOpacity(1);
+		}
 	}
 }	
 
@@ -78,6 +82,7 @@ function initMap () {
 		circle = L.circle(e.latlng, searchRadius * 1000);
 		map.addLayer(circle);
 		myLatLng = e.latlng;
+		spinMap(false);
 	}
 
 	function onLocationError(e) {
@@ -94,11 +99,13 @@ function initMap () {
 		}
 		circle = L.circle(myLatLng, searchRadius * 1000);
 		map.addLayer(circle);
+		spinMap(false);
 	}
 
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);
 	map.locate({setView: true});
+	spinMap(true);
 }
 
 function refreshMap(day) {

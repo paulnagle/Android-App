@@ -48,12 +48,12 @@
 				<div id="search-radius" dojoType="dojox.mobile.View">	
 					<div>
 						<label><b>Go to current GPS Position</b></label>
-						<fieldset><button id="locResetBtn" type="button"></button><div id="locResult"></div></fieldset>
+						<fieldset><div id="locResult"><legend>Update Location </legend></div><button id="locResetBtn" type="button"></button></fieldset>
 					</div>
 					<div>
 						<label><b>Set Search Radius</b></label>
-						<div id="radiusLabel"><label>Search Radius = 10km</label></div>
-						<fieldset><table width="100%"><tr><td width="10%">0km</td><td><pre id="sliderHere"></pre></td><td width="10%">150km</td></tr></table></fieldset>	
+						<fieldset><div id="radiusLabel"><legend>Search Radius = 10km</legend></div>
+						<table width="100%"><tr><td width="10%">0km</td><td><pre id="sliderHere"></pre></td><td width="10%">150km</td></tr></table></fieldset>	
 					</div>
 					<div data-dojo-type="dojox/mobile/FormLayout" data-dojo-props="columns:'two'">
 						<label><b>Set Search Day</b></label>

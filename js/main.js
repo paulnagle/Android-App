@@ -61,10 +61,11 @@ function initMap () {
 	console.log("****creating map****");
 	map = L.map('map_canvas').setView(myLatLng, 9);
 
-	L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
-		minZoom 	:	 6,
-		maxZoom		: 	18
+	L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
+		subdomains	:	'1234',
+		type		:	'osm',
+		minZoom 	:	6,
+		maxZoom		:	18
 	}).addTo(map);
 	
 	function onLocationFound(e) {

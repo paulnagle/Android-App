@@ -57,12 +57,29 @@ function initMap () {
 	console.log("****Running initMap()***");
 	var mapNode = document.getElementById("map_canvas");
 	
-	// TODO: make the map fill the screen between the top bar and the bottom bar
-	var topBarHeight = document.getElementById('topBar').offsetHeight;
-	var tabBarHeight = document.getElementById('tabBar').offsetHeight;
-	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
-	mapNode.style.height = newHeight + "px";			
+	function setMapHeight() {
+		// TODO: make the map fill the screen between the top bar and the bottom bar
+		var topBarHeight = document.getElementById('topBar').clientHeight;
+		var tabBarHeight = document.getElementById('tabBar').clientHeight;
+		var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
+		mapNode.style.height = newHeight + "px";	
+	}
 
+	function doOnOrientationChange() {
+		switch(window.orientation) {  
+			case -90:
+			case 90:
+				setMapHeight();
+				break; 
+			default:
+				setMapHeight();
+				break; 
+		}
+	}
+
+	window.addEventListener('orientationchange', doOnOrientationChange);
+	setMapHeight();
+	
 	myLatLng = L.latLng(51.9, -8.6);
 
 	console.log("****creating map****");

@@ -7,6 +7,9 @@ var currentLocationMarker = null;
 var markerClusterer = new L.markerClusterGroup();
 var aMarker = null;
 var searchRadius = 10;  // default to 10km
+
+// TODO
+// Store these in an array that we can save the state of?
 var searchSun = 1;
 var searchMon = 1;
 var searchTue = 1;
@@ -53,7 +56,11 @@ function spinMap(spinFlag) {
 function initMap () {
 	console.log("****Running initMap()***");
 	var mapNode = document.getElementById("map_canvas");
-	var newHeight = Math.round((70 / 100) * window.innerHeight);
+	
+	// TODO: make the map fill the screen between the top bar and the bottom bar
+	var topBarHeight = document.getElementById('topBar').offsetHeight;
+	var tabBarHeight = document.getElementById('tabBar').offsetHeight;
+	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
 	mapNode.style.height = newHeight + "px";			
 
 	myLatLng = L.latLng(51.9, -8.6);

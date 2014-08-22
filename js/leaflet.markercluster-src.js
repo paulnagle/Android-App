@@ -6,7 +6,6 @@
 (function (window, document, undefined) {/*
  * L.MarkerClusterGroup extends L.FeatureGroup by clustering the markers contained within
  */
- 
 
 L.MarkerClusterGroup = L.FeatureGroup.extend({
 

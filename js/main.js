@@ -7,6 +7,7 @@ var currentLocationMarker = null;
 var markerClusterer = new L.markerClusterGroup();
 var aMarker = null;
 var searchRadius = 10;  // default to 10km
+  
 
 // TODO
 // Store these in an array that we can save the state of?

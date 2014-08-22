@@ -4,25 +4,25 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<title>Meeting Locations</title>
-		
+
 		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojox/mobile/themes/iphone/iphone.css" />
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
 		
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>	
-		<script src="js/leaflet.markercluster-src.js"></script>
+		<script src="js/leaflet.markercluster.js"></script>
 		<script src="js/Leaflet.MakiMarkers.js"></script>
 		<script src="js/spin.min.js"></script>
 		<script src="js/leaflet.spin.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojo/dojo.js" djConfig="parseOnLoad:true"></script>
 		<script src="js/main.js"></script>		
 	</head>
-	<body>
+	<body> <div id="wholePage">
 		<div id="homepage" dojoType="dojox.mobile.View" selected="true">
-			<h1 dojoType="dojox/mobile/Heading">Meeting Locations</h1>
+			<h1 dojoType="dojox/mobile/Heading">NA Ireland Meeting Finder</h1>
 			<ul dojoType="dojox/mobile/RoundRectList">
-				<li id="search_all" dojoType="dojox.mobile.ListItem" icon="img/search-29x29.png"  moveTo="search">
+				<li id="search_all" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
 					Search For Meetings 
 				</li>
 				<li id="search_today" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
@@ -42,16 +42,28 @@
 			<ul dojoType="dojox/mobile/RoundRectList">
 				<div id="search-radius" dojoType="dojox.mobile.View">	
 					<div>
-						<label><b>Go to current GPS Position</b></label>
-						<fieldset><div id="locResult"><legend>Update Location </legend></div><button id="locResetBtn" type="button"></button></fieldset>
+						<label><b>Go to current GPS location</b></label>
+						<fieldset><div id="locResult"><legend>Update location </legend></div><button id="locResetBtn" type="button"></button></fieldset>
 					</div>
 					<div>
+						<label><b>Go to this location</b></label>
+						<fieldset><div><legend>Set location </legend></div>
+							<input 	data-dojo-type="dojox/mobile/TextBox" 
+									placeHolder="Doesn't work yet :-("
+									data-dojo-props='	maxLength:20,  
+														onChange:function(newValue){ 
+															alert("value changed to " + newValue); 
+														}' />
+						</fieldset>
+					</div>	
+					<div>
 						<label><b>Set Search Radius</b></label>
-						<fieldset><div id="radiusLabel"><legend>Search Radius = 10km</legend></div>
+						<fieldset><div id="radiusLabel"><legend>Search radius = 10km</legend></div>
 						<table width="100%"><tr><td width="10%">0km</td><td><pre id="sliderHere"></pre></td><td width="10%">150km</td></tr></table></fieldset>	
 					</div>
 					<div data-dojo-type="dojox/mobile/FormLayout" data-dojo-props="columns:'two'">
 						<label><b>Set Search Day</b></label>
+						<fieldset><div>
 						<div>			
 							<label>Sunday</label>
 							<fieldset><pre id="SunSwitchHere"></pre></fieldset>
@@ -80,6 +92,7 @@
 							<label>Saturday</label>
 							<fieldset><pre id="SatSwitchHere"></pre></fieldset>
 						</div>
+						</div></fieldset>
 					</div>
 				</div>
 			</ul>
@@ -117,5 +130,5 @@
 		</div>
 
 		
-	</body>
+	</div></body>
 </html>

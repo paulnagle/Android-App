@@ -20,5 +20,8 @@ TODO List:
     to get messed up on restore i.e. search results doubled, session management/caching
 13. Figure out a better way to calculate the height of the map
 14. Map resize on change from horizontal to vertical and vice-versa
-15. 
+15. Use ToggleButtons for the Days settings
+16. Save the state of the Days ToggleButtons to revert to after a search for meetings today or tomorrow is over
+17. Use dojo.xhr  Error/nocache/timeout
+18. Marker touch on Android still not working - refactor this part of the code, its a mess
 

@@ -5,7 +5,6 @@ var myLatLng = new L.latLng();
 var circle = null;
 var currentLocationMarker = null;
 var markerClusterer = new L.markerClusterGroup();
-var aMarker = null;
 var searchRadius = 10;  // default to 10km
   
 
@@ -54,12 +53,11 @@ function spinMap(spinFlag) {
 	}
 }	
 
-function initMap () {
+function initMap() {
 	console.log("****Running initMap()***");
 	var mapNode = document.getElementById("map_canvas");
 	
 	function setMapHeight() {
-		// TODO: make the map fill the screen between the top bar and the bottom bar
 		var topBarHeight = document.getElementById('topBar').clientHeight;
 		var tabBarHeight = document.getElementById('tabBar').clientHeight;
 		var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
@@ -81,7 +79,7 @@ function initMap () {
 	window.addEventListener('orientationchange', doOnOrientationChange);
 	setMapHeight();
 	
-	myLatLng = L.latLng(51.9, -8.6);
+	myLatLng = L.latLng(51.9, -8.6); // use somewhere else?
 
 	console.log("****creating map****");
 	map = L.map('map_canvas').setView(myLatLng, 9);
@@ -108,7 +106,7 @@ function initMap () {
 		circle = L.circle(e.latlng, searchRadius * 1000);
 		map.addLayer(circle);
 		myLatLng = e.latlng;
-		spinMap(false);
+		map.fitBounds(circle.getBounds());
 	}
 
 	function onLocationError(e) {
@@ -125,18 +123,16 @@ function initMap () {
 		}
 		circle = L.circle(myLatLng, searchRadius * 1000);
 		map.addLayer(circle);
-		spinMap(false);
+		map.fitBounds(circle.getBounds());
 	}
 
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);
 	map.locate({setView: true});
-	spinMap(true);
 }
 
 function refreshMap(day) {
 	console.log("****Running refreshMap()****");
-	spinMap(true);
 	if (circle) {
 		map.removeLayer(circle);
 	}
@@ -164,20 +160,26 @@ function getCurrentGPSLocation() {
 	}
 }
 
-function runSearch (day) {
-	require([
-		"dojo/json", 
-		"dojo/dom", 
-		"dojo/dom-construct", 
-		"dojo/on", 
-		"dojox/mobile/RoundRectList",
-		"dojox/mobile/ListItem",
-		"dojo/_base/xhr",
-		"dijit/registry",
-		"dojo/domReady!"], 
-	function(JSON, dom, domConstruct, on, RoundRectList, ListItem, xhr, registry){
-		console.log("****Running runSearch()****");
-		
+function buildSearchURL () {
+	console.log("****Running buildSearchURL()****");
+	search_url = "http://www.nasouth.ie/bmlt/main_server/client_interface/json/";
+	search_url += "?switcher=GetSearchResults";
+	search_url += "&geo_width_km=" + searchRadius;
+	search_url += "&long_val=" + myLatLng.lng;
+	search_url += "&lat_val=" + myLatLng.lat;
+	search_url += "&sort_key=sort_results_by_distance";
+	if (searchSun == true) { search_url += "&weekdays[]=1"; }
+	if (searchMon == true) { search_url += "&weekdays[]=2"; }
+	if (searchTue == true) { search_url += "&weekdays[]=3"; }
+	if (searchWed == true) { search_url += "&weekdays[]=4"; }
+	if (searchThu == true) { search_url += "&weekdays[]=5"; }
+	if (searchFri == true) { search_url += "&weekdays[]=6"; }
+	if (searchSat == true) { search_url += "&weekdays[]=7"; }							
+	console.log("====SEARCH URL====" + search_url);
+}
+
+function setupSwitches(day) {
+	console.log("****Running setupSwitches()****");
 		var switches = ["sw_mon", "sw_tue", "sw_wed", "sw_thu", "sw_fri", "sw_sat", "sw_sun"];
 		if (day != "all") { //reset all the day switches to off
 			for (i = 0; i < switches.length; i++) {
@@ -199,72 +201,72 @@ function runSearch (day) {
 			var widget = registry.byId(search_day);
 			widget.set("value", "on"); // "on" or "off" can be set
 		}
-				
+	}
+
+function runSearch(day) {
+	require([
+		"dojo/json", 
+		"dojo/dom", 
+		"dojo/dom-construct", 
+		"dojo/on", 
+		"dojox/mobile/RoundRectList",
+		"dojox/mobile/ListItem",
+		"dojo/_base/xhr",
+		"dijit/registry",
+		"dojo/domReady!"], 
+	function(JSON, dom, domConstruct, on, RoundRectList, ListItem, xhr, registry){
+		console.log("****Running runSearch()****");
+
+		setupSwitches(day);				
+		buildSearchURL();
 		
-		
-		search_url = "http://www.nasouth.ie/bmlt/main_server/client_interface/json/";
-		search_url += "?switcher=GetSearchResults";
-		search_url += "&geo_width_km=" + searchRadius;
-		search_url += "&long_val=" + myLatLng.lng;
-		search_url += "&lat_val=" + myLatLng.lat;
-		search_url += "&sort_key=sort_results_by_distance";
-		if (searchSun == true) { search_url += "&weekdays[]=1"; }
-		if (searchMon == true) { search_url += "&weekdays[]=2"; }
-		if (searchTue == true) { search_url += "&weekdays[]=3"; }
-		if (searchWed == true) { search_url += "&weekdays[]=4"; }
-		if (searchThu == true) { search_url += "&weekdays[]=5"; }
-		if (searchFri == true) { search_url += "&weekdays[]=6"; }
-		if (searchSat == true) { search_url += "&weekdays[]=7"; }							
-		console.log("====SEARCH URL====" + search_url);
 		// Destroy and recreate the holder for list results
 		domConstruct.empty("output");
 		var ul  = new RoundRectList({}, domConstruct.create("ul",{}, this.output) );
 		ul.startup();
-
+		spinMap(true);
 		markerClusterer.clearLayers();
-		
 		xhr.get({
 	        url: search_url,
 			handleAs:"json",
-			load: function(data){
+			timeout: 5000,
+			error: function(){
+				spinMap(false);
+				alert("Data fetch timed out after 5sec. Try a smaller search radius?");
+				},
+			load: function(data){				
 				var i = 0;
 				dojo.forEach(data, function(datum) { 
 					i++;
-					html = dayOfWeekAsString(datum.weekday_tinyint) + "&nbsp;" ;
-					html += datum.start_time.substring(0, 5) + "&nbsp;" 
-					html += datum.meeting_name + "&nbsp;" 
-					html += datum.location_text + "&nbsp;" 
-					html += datum.location_street + "&nbsp;" ;
-					html += datum.location_info;											
+					
+					markerContent = "<p><b>" + datum.meeting_name + "</b></p>";
+					markerContent += "<p><i>" + dayOfWeekAsString(datum.weekday_tinyint) 
+					markerContent += "&nbsp;" + datum.start_time.substring(0, 5) + "</i>&nbsp;&nbsp;";
+					markerContent += datum.location_text + "&nbsp;" + datum.location_street + "<br>";
+					markerContent += "<i>" + datum.location_info + "</i></p>";
+											
 					li = new ListItem({
-						"label"          : html,
+						"label"          : markerContent,
 						"variableHeight" : "true",
 						"class"          : "subTotalListItem",
 						"rightText"      : parseFloat(datum.distance_in_km).toFixed(1) + " kms"
 					}, domConstruct.create("li",{}, ul.domNode) );
 					li.startup();								   
 					
-					markerContent = "<p><b>" + datum.meeting_name + "</b></p>";
-					markerContent += "<p><i>" + dayOfWeekAsString(datum.weekday_tinyint) + "&nbsp;" + datum.start_time.substring(0, 5) + "</i>&nbsp;&nbsp;";
-					markerContent += datum.location_text + "&nbsp;" + datum.location_street + "<br>";
-					markerContent += "<i>" + datum.location_info + "</i></p>";
 					// Add markers to the markerClusterer Layer
-					if (aMarker) {
-						delete aMarker;
-					}
-					aMarker = new L.marker([datum.latitude, datum.longitude], {icon: naIcon}).bindPopup("<p>" + markerContent + "</p>");
+					var aMarker = L.marker([datum.latitude, datum.longitude], {icon: naIcon});
+					aMarker.bindPopup(markerContent);
 					markerClusterer.addLayer(aMarker);
 				});	
-
-				document.getElementById("list_heading").innerHTML= '<h3 align="center">' + i + '&nbsp;Meetings</h3>';
 				spinMap(false);
+				document.getElementById("list_heading").innerHTML= '<h3 align="center">' + i + '&nbsp;Meetings</h3>';
 			}
 		});
+		// Add the markerClusterer layer to the map
+		map.addLayer(markerClusterer);	
+		console.log("Adjusting mapzoom to circle size");
+		map.fitBounds(circle.getBounds());
 	});	
-	// Add the markerClusterer layer to the map
-	map.addLayer(markerClusterer);	
-	console.log("Adjusting mapzoom to circle size");
-	map.fitBounds(circle.getBounds());
 }
 
 dojo.addOnLoad( function() {

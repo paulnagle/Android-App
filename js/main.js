@@ -178,6 +178,8 @@ function buildSearchURL () {
 
 function setupSwitches(day) {
 	console.log("****Running setupSwitches()****");
+	require(["dijit/registry"], 
+	function(registry){
 		var switches = ["sw_mon", "sw_tue", "sw_wed", "sw_thu", "sw_fri", "sw_sat", "sw_sun"];
 		if (day != "all") { //reset all the day switches to off
 			for (i = 0; i < switches.length; i++) {
@@ -199,7 +201,8 @@ function setupSwitches(day) {
 			var widget = registry.byId(search_day);
 			widget.set("value", "on"); // "on" or "off" can be set
 		}
-	}
+	});
+}
 
 function runSearch(day) {
 	require([
@@ -269,18 +272,7 @@ function runSearch(day) {
 	});	
 }
 
-dojo.addOnLoad( function() {
-  // attach on click to id="search_all"
-  dojo.query('#search_all').onclick( function(evt) { 
-	refreshMap("all");
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#tab-search2').onclick( function(evt){refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#tab-search3').onclick( function(evt){refreshMap("all");});});
-
-dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){
+function selectSearch() {
 	dijit.registry.byId("tab-search1").set('selected', true);
 	dijit.registry.byId("tab-search2").set('selected', true);
 	dijit.registry.byId("tab-search3").set('selected', true);
@@ -289,37 +281,10 @@ dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){
 	dijit.registry.byId("tab-list3").set('selected', false);
 	dijit.registry.byId("tab-setting1").set('selected', false);
 	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
+	dijit.registry.byId("tab-setting3").set('selected', false);	
+}
 
-dojo.addOnLoad( function(){dojo.query('#tab-search2').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', true);
-	dijit.registry.byId("tab-search2").set('selected', true);
-	dijit.registry.byId("tab-search3").set('selected', true);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-search3').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', true);
-	dijit.registry.byId("tab-search2").set('selected', true);
-	dijit.registry.byId("tab-search3").set('selected', true);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-list1').onclick( function(evt){
+function selectList() {
 	dijit.registry.byId("tab-search1").set('selected', false);
 	dijit.registry.byId("tab-search2").set('selected', false);
 	dijit.registry.byId("tab-search3").set('selected', false);
@@ -328,63 +293,10 @@ dojo.addOnLoad( function(){dojo.query('#tab-list1').onclick( function(evt){
 	dijit.registry.byId("tab-list3").set('selected', true);
 	dijit.registry.byId("tab-setting1").set('selected', false);
 	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
+	dijit.registry.byId("tab-setting3").set('selected', false);	
+}
 
-dojo.addOnLoad( function(){dojo.query('#tab-list2').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', true);
-	dijit.registry.byId("tab-list2").set('selected', true);
-	dijit.registry.byId("tab-list3").set('selected', true);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-list3').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', true);
-	dijit.registry.byId("tab-list2").set('selected', true);
-	dijit.registry.byId("tab-list3").set('selected', true);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-setting1').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', true);
-	dijit.registry.byId("tab-setting2").set('selected', true);
-	dijit.registry.byId("tab-setting3").set('selected', true);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-setting2').onclick( function(evt){
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', true);
-	dijit.registry.byId("tab-setting2").set('selected', true);
-	dijit.registry.byId("tab-setting3").set('selected', true);		
-	});
-});
-
-dojo.addOnLoad( function(){dojo.query('#tab-setting3').onclick( function(evt){
+function selectSetting(){
 	dijit.registry.byId("tab-search1").set('selected', false);
 	dijit.registry.byId("tab-search2").set('selected', false);
 	dijit.registry.byId("tab-search3").set('selected', false);
@@ -394,32 +306,24 @@ dojo.addOnLoad( function(){dojo.query('#tab-setting3').onclick( function(evt){
 	dijit.registry.byId("tab-setting1").set('selected', true);
 	dijit.registry.byId("tab-setting2").set('selected', true);
 	dijit.registry.byId("tab-setting3").set('selected', true);	
-	});
-});
+}
 
-dojo.addOnLoad( function() {
-  dojo.query('#tab-search2').onclick( function(evt) { 
-	refreshMap("all");
-	});
-});
+dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectSearch(); refreshMap("all");});});
+dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectSearch(); refreshMap("today");});});
+dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectSearch(); refreshMap("tomorrow");});});
 
-dojo.addOnLoad( function() {
-  dojo.query('#tab-search3').onclick( function(evt) { 
-	refreshMap("all");
-	});
-});
+dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){selectSearch(); refreshMap("all");});});
+dojo.addOnLoad( function(){dojo.query('#tab-search2').onclick( function(evt){selectSearch(); refreshMap("all");});});
+dojo.addOnLoad( function(){dojo.query('#tab-search3').onclick( function(evt){selectSearch(); refreshMap("all");});});
 
-dojo.addOnLoad( function() {
-  dojo.query('#search_today').onclick( function(evt) { 
-	refreshMap("today");
-	});
-});
+dojo.addOnLoad( function(){dojo.query('#tab-list1').onclick( function(evt){ selectList();});});
+dojo.addOnLoad( function(){dojo.query('#tab-list2').onclick( function(evt){ selectList();});});
+dojo.addOnLoad( function(){dojo.query('#tab-list3').onclick( function(evt){ selectList();});});
 
-dojo.addOnLoad( function() {
-  dojo.query('#search_tomorrow').onclick( function(evt) { 
-	refreshMap("tomorrow");
-	});
-});
+dojo.addOnLoad( function(){dojo.query('#tab-setting1').onclick( function(evt){ selectSetting();});});
+dojo.addOnLoad( function(){dojo.query('#tab-setting2').onclick( function(evt){ selectSetting();});});
+dojo.addOnLoad( function(){dojo.query('#tab-setting3').onclick( function(evt){ selectSetting();});});
+
 
 // This is run when the page is initially loaded and ready	
 // Main purpose is to build the settings panel, and the

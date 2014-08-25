@@ -50,6 +50,7 @@ function spinMap(spinFlag) {
 	}
 }	
 
+
 function initMap() {
 	console.log("****Running initMap()***");
 	var mapNode = document.getElementById("map_canvas");
@@ -76,7 +77,7 @@ function initMap() {
 	window.addEventListener('orientationchange', doOnOrientationChange);
 	setMapHeight();
 	
-	myLatLng = L.latLng(51.9, -8.6); // use somewhere else?
+	myLatLng = L.latLng(53.341318, -6.270205); // Irish Service Office
 
 	console.log("****creating map****");
 	map = L.map('map_canvas').setView(myLatLng, 9);
@@ -97,14 +98,14 @@ function initMap() {
 			myLatLng = e.target.getLatLng();
 			refreshMap("all");
 		});
-		
+		 
 		if (circle) {
 			map.removeLayer(circle);
 		}
 		circle = L.circle(e.latlng, searchRadius * 1000);
 		map.addLayer(circle);
 		myLatLng = e.latlng;
-		map.fitBounds(circle.getBounds());
+		map.fitBounds(circle.getBounds());   
 	}
 
 	function onLocationError(e) {
@@ -115,19 +116,14 @@ function initMap() {
 			myLatLng = e.target.getLatLng();
 			refreshMap("all");
 		});
-		
-		if (circle) {
-			map.removeLayer(circle);
-		}
-		circle = L.circle(myLatLng, searchRadius * 1000);
-		map.addLayer(circle);
-		map.fitBounds(circle.getBounds());
 	}
 
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);
 	map.locate({setView: true});
 }
+
+
 
 function refreshMap(day) {
 	console.log("****Running refreshMap()****");
@@ -369,7 +365,6 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 		}
 	}, domConstruct.create("slid",{}, this.sliderHere));
 	
-//	dojo.connect(dojo.byId("slid"),"onmouseup", function(){refreshMap();});
 	slid.startup();
 					
 	var sw_sun = new Switch({id:"sw_sun", value:"on", leftLabel:"Sun"});

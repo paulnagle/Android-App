@@ -305,6 +305,8 @@ function selectSetting(){
 dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectSearch(); refreshMap("all");});});
 dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectSearch(); refreshMap("today");});});
 dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectSearch(); refreshMap("tomorrow");});});
+dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectSettings();});});
+
 
 dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){selectSearch(); refreshMap("all");});});
 dojo.addOnLoad( function(){dojo.query('#tab-search2').onclick( function(evt){selectSearch(); refreshMap("all");});});

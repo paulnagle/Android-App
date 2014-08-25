@@ -50,7 +50,6 @@ function spinMap(spinFlag) {
 	}
 }	
 
-
 function initMap() {
 	console.log("****Running initMap()***");
 	var mapNode = document.getElementById("map_canvas");
@@ -123,8 +122,6 @@ function initMap() {
 	map.locate({setView: true});
 }
 
-
-
 function refreshMap(day) {
 	console.log("****Running refreshMap()****");
 	if (circle) {
@@ -155,7 +152,7 @@ function getCurrentGPSLocation() {
 }
 
 function buildSearchURL () {
-	console.log("****Running buildSearchURL()****");
+	console.log("****Running buildSearchURL()****");	
 	search_url = "http://www.nasouth.ie/bmlt/main_server/client_interface/json/";
 	search_url += "?switcher=GetSearchResults";
 	search_url += "&geo_width_km=" + searchRadius;
@@ -168,7 +165,8 @@ function buildSearchURL () {
 	if (searchWed == true) { search_url += "&weekdays[]=4"; }
 	if (searchThu == true) { search_url += "&weekdays[]=5"; }
 	if (searchFri == true) { search_url += "&weekdays[]=6"; }
-	if (searchSat == true) { search_url += "&weekdays[]=7"; }							
+	if (searchSat == true) { search_url += "&weekdays[]=7"; }
+	search_url += "&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_street,location_info,distance_in_km,latitude,longitude";	
 	console.log("====SEARCH URL====" + search_url);
 }
 
@@ -226,10 +224,10 @@ function runSearch(day) {
 		var xhrArgs = {
 	        url: search_url,
 			handleAs:"json",
-			timeout: 5000,
+			timeout: 10000,
 			error: function(){
 				spinMap(false);
-				alert("Data fetch timed out after 5sec. Try a smaller search radius?");
+				alert("Data fetch timed out after 10sec. Try a smaller search radius?");
 				},
 			load: function(data){				
 				var i = 0;

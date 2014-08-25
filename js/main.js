@@ -4,7 +4,7 @@ var myLatLng = new L.latLng();
 var circle = null;
 var currentLocationMarker = null;
 var markerClusterer = new L.markerClusterGroup();
-var searchRadius = 10;  // default to 10km
+var searchRadius = 25;  // default to 25km
   
 // Store these in an array that we can save the state of?
 var searchSun = 1;

@@ -18,7 +18,7 @@ var searchSat = 1;
 //Extend the Default marker class
 var NaIcon = L.Icon.Default.extend({
 	options: {
-		iconUrl: 'img/marker-icon-red.png' 
+		iconUrl: 'img/marker-icon-red.png' // photoshop this image to add an approximation of the NA symbol
 	}
 });
 var naIcon = new NaIcon();
@@ -31,9 +31,10 @@ var markerIcon = L.MakiMarkers.icon({
 });
 
 function doClick(geocodeLocation) {
+	// Using my personal key here!
 	var geoCodeURL = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur25ubn0%2Crw%3Do5-9w751f&location=' 
 	geoCodeURL += geocodeLocation;
-	geoCodeURL +='&callback=renderGeocode';
+	geoCodeURL +=', Ireland&callback=renderGeocode';
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = geoCodeURL;
@@ -42,15 +43,20 @@ function doClick(geocodeLocation) {
 
 function renderGeocode(response) {
     var html = '';  
-	html = "New location Lat/Lng: ";
-	var geoCodeResult = response.results[0].locations[0];
-	html += "(" + geoCodeResult.latLng.lat + ", " + geoCodeResult.latLng.lng + ")";
-	
+	var geoCodeResult = response.results[0].locations[0];	
+	var d = new Date(); 
+	hours = d.getHours(); 
+	hours = hours < 10 ? '0'+hours : hours;
+	minutes = d.getMinutes();  
+	minutes = minutes < 10 ? '0'+minutes : minutes;
+	seconds = d.getSeconds(); 
+	seconds = seconds < 10 ? '0'+seconds : seconds;
+	document.getElementById("geoLocationLegend").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;	
 	myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
-	document.getElementById("geoLocationLegend").innerHTML = html;
 	currentLocationMarker.setLatLng(myLatLng);
+	refreshMap("all");
 }
-		
+	
 function dayOfWeekAsString(dayIndex) {
 	return ["not a day?", "Sun", "Mon","Tue","Wed","Thu","Fri","Sat"][dayIndex];
 }
@@ -108,8 +114,7 @@ function initMap() {
 		minZoom 	:	6,
 		maxZoom		:	18
 	}).addTo(map);
-	
-	
+		
 	function onLocationFound(e) {
 		console.log("****Running onLocationFound()***");
 		currentLocationMarker = new L.marker(e.latlng, {draggable: true, icon: markerIcon}).addTo(map);
@@ -155,9 +160,9 @@ function refreshMap(day) {
 
 function getCurrentGPSLocation() {
     console.log("****getCurrentGPSLocation()****");
-	navigator.geolocation.getCurrentPosition(GetLocation);
+	navigator.geolocation.getCurrentPosition(setLocation);
 	document.getElementById("locResult").innerHTML = ".";
-	function GetLocation(location) {
+	function setLocation(location) {
 		var d = new Date(); 
 		hours = d.getHours(); 
 		hours = hours < 10 ? '0'+hours : hours;
@@ -248,7 +253,7 @@ function runSearch(day) {
 			timeout: 10000,
 			error: function(){
 				spinMap(false);
-				alert("Data fetch timed out after 10sec. Try a smaller search radius?");
+				alert("Search timed out after 10sec. This app relies on your internet connection. Press the Map button to try again.");
 				},
 			load: function(data){				
 				var i = 0;
@@ -260,6 +265,13 @@ function runSearch(day) {
 					markerContent += "&nbsp;" + datum.start_time.substring(0, 5) + "</i>&nbsp;&nbsp;";
 					markerContent += datum.location_text + "&nbsp;" + datum.location_street + "<br>";
 					markerContent += "<i>" + datum.location_info + "</i></p>";
+					fromHere = "'" + myLatLng.lat + ',' + myLatLng.lng + "'";
+					toHere   = "'" + datum.latitude + ',' + datum.longitude + "'";
+				 	markerContent += '<a href="http://maps.google.com/maps?saddr=';
+					markerContent += myLatLng.lat + ',' + myLatLng.lng;
+					markerContent += '&daddr=' 
+					markerContent += datum.latitude + ',' + datum.longitude;
+					markerContent +='">Click here for directions</a>';
 											
 					li = new ListItem({
 						"label"          : markerContent,

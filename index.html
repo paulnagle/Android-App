@@ -21,7 +21,7 @@
 	<body> <div id="wholePage">
 		<div id="homepage" dojoType="dojox.mobile.View" selected="true">
 			<h1 dojoType="dojox/mobile/Heading">NA Ireland Meeting Finder</h1>
-			<ul dojoType="dojox/mobile/RoundRectList">
+			<ul dojoType="dojox/mobile/RoundRectList" >
 				<li id="search_all" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
 					Search For Meetings 
 				</li>
@@ -47,12 +47,12 @@
 					</div>
 					<div>
 						<label><b>Search from this location</b></label>
-						<fieldset><div><legend>Set location </legend></div>
+						<fieldset><div><legend id="geoLocationLegend">Set location </legend></div>
 							<input 	data-dojo-type="dojox/mobile/TextBox" 
-									placeHolder="Doesn't work yet :-("
-									data-dojo-props='	maxLength:20,  
+									placeHolder="Type address, hit enter"
+									data-dojo-props='	maxLength:50,  
 														onChange:function(newValue){ 
-															alert("value changed to " + newValue); 
+															doClick(newValue); 
 														}' />
 						</fieldset>
 					</div>	

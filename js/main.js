@@ -29,6 +29,27 @@ var markerIcon = L.MakiMarkers.icon({
 	color: "#0a0",
 	size: "l"
 });
+
+function doClick(geocodeLocation) {
+	var geoCodeURL = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur25ubn0%2Crw%3Do5-9w751f&location=' 
+	geoCodeURL += geocodeLocation;
+	geoCodeURL +='&callback=renderGeocode';
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = geoCodeURL;
+    document.body.appendChild(script);
+};
+
+function renderGeocode(response) {
+    var html = '';  
+	html = "New location Lat/Lng: ";
+	var geoCodeResult = response.results[0].locations[0];
+	html += "(" + geoCodeResult.latLng.lat + ", " + geoCodeResult.latLng.lng + ")";
+	
+	myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
+	document.getElementById("geoLocationLegend").innerHTML = html;
+	currentLocationMarker.setLatLng(myLatLng);
+}
 		
 function dayOfWeekAsString(dayIndex) {
 	return ["not a day?", "Sun", "Mon","Tue","Wed","Thu","Fri","Sat"][dayIndex];
@@ -305,7 +326,7 @@ function selectSetting(){
 dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectSearch(); refreshMap("all");});});
 dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectSearch(); refreshMap("today");});});
 dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectSearch(); refreshMap("tomorrow");});});
-dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectSettings();});});
+dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectSetting();});});
 
 
 dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){selectSearch(); refreshMap("all");});});

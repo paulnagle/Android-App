@@ -385,7 +385,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	
 	// Build the settings panel
 	var slid  = new Slider({
-		"value"	:	15 ,
+		"value"	:	25 ,
 		"min"	:	1 ,
 		"max"	:	150,
 		"step"	:	1 ,

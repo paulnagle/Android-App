@@ -32,7 +32,10 @@
 					Find Meetings Tomorrow
 				</li>
 				<li id="search_settings" dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="settings">
-					Settings
+					Search Settings
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="contact">
+					Contact
 				</li>
 			</ul>
 		</div>
@@ -145,6 +148,89 @@
 			</ul>
 		</div>
 
+		<div id="contact" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Contact Details</h1>
+			<ul dojoType="dojox/mobile/RoundRectList" >
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="phones">
+					Phone Lines 
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="websites">
+					Websites 
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png" moveTo="email">
+					Email addresses
+				</li>
+			</ul>
+		</div>
+
+		<div id="phones" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Contacts" moveTo="contact">Area Phone Lines</h1>
+			<ul dojoType="dojox/mobile/RoundRectList" >
+				<li dojoType="dojox/mobile/ListItem" data-dojo-props='variableHeight:"true"' icon="img/search-29x29.png">
+					Regional Info Line
+					<p style="font-family:verdana;font-size:14px;">Information line only</p>
+					<p style="font-family:verdana;font-size:14px;"><a href="tel:+35316728000">Tel: +353 (0)1-6728000</a></p>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" data-dojo-props='variableHeight:"true"' icon="img/search-29x29.png">
+					Eastern Area  
+					<p style="font-family:verdana;font-size:14px;"><a href="tel:+353868629308">Tel: +353 (0) 86-8629308</a></p>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" data-dojo-props='variableHeight:"true"' icon="img/search-29x29.png">
+					Southern Area 
+					<p style="font-family:verdana;font-size:14px;">Every evening from 6-9pm</p>
+					<p style="font-family:verdana;font-size:14px;"><a href="tel:+353871386120">Tel: +353 (0) 87-1386120</a></p>					
+				</li>
+				<li dojoType="dojox/mobile/ListItem" data-dojo-props='variableHeight:"true"' icon="img/search-29x29.png">
+					Western Area 
+					<p style="font-family:verdana;font-size:14px;"><a href="tel:+353868149004">Tel: +353 (0) 86-8149004</a></p>										
+					
+				</li>
+				<li dojoType="dojox/mobile/ListItem" data-dojo-props='variableHeight:"true"' icon="img/search-29x29.png">
+					Northern Area  
+					<p style="font-family:verdana;font-size:14px;">Every evening from 7-10pm</p>
+					<p style="font-family:verdana;font-size:14px;"><a href="tel:+447810172991">Tel: +44 781-0172991</a></p>										
+					<p style="font-family:verdana;font-size:14px;">In Donegal, you can call <a href="tel:0860668377">086 - 066 8377</a></p>
+				
+				</li>
+			</ul>
+		</div>		
+		
+		<div id="websites" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Contacts" moveTo="contact">Area Web Sites</h1>
+			<ul dojoType="dojox/mobile/RoundRectList" >
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="http://www.na-ireland.org">Regional Website</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="http://www.nairleast.org">Eastern Area Website</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="http://www.nasouth.ie">Southern Area Website</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="http://www.nanorthernireland.com">Northern Area Website</a>
+				</li>
+			</ul>
+		</div>	
+		
+		<div id="email" dojoType="dojox/mobile/ScrollableView">
+			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Contacts" moveTo="contact">Area Email Contacts</h1>
+			<ul dojoType="dojox/mobile/RoundRectList" >
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="mailto:info@na-ireland.org">Regional Contact</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="mailto:info@nairleast.org">Eastern Area</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="mailto:info@nasouth.ie">Southern Area</a>
+				</li>
+				<li dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png">
+					<a href="mailto:contact@nanorthernireland.com">Northern Area</a>
+				</li>
+			</ul>
+		</div>		
+		
 		
 	</div></body>
 </html>

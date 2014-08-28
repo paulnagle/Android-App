@@ -15,6 +15,15 @@ var searchThu = 1;
 var searchFri = 1;
 var searchSat = 1;
 
+var opts = {
+    className: 'spinnerDiv', // The CSS class to assign to the spinner
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    top: '50%', // Top position relative to parent in px
+    left: '50%' // Left position relative to parent in px
+};
+
+var spinner = new Spinner(opts);
+
 //Extend the Default marker class
 var NaIcon = L.Icon.Default.extend({
 	options: {
@@ -34,6 +43,9 @@ function findAddress() {
 	require(["dijit/registry"], 
 	function(registry){
 		var widget = registry.byId(locTextBox);
+		var target = registry.byId(locSpin);
+		spinner.spin(target);
+		document.getElementById('settingsUL').style.opacity=".3";
 		geocodeLocation = widget.value;
 		// Using my personal key here!
 		var geoCodeURL = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur25ubn0%2Crw%3Do5-9w751f&location=' 
@@ -49,17 +61,24 @@ function findAddress() {
 function renderGeocode(response) {
     var html = '';  
 	var geoCodeResult = response.results[0].locations[0];	
-	var d = new Date(); 
-	hours = d.getHours(); 
-	hours = hours < 10 ? '0'+hours : hours;
-	minutes = d.getMinutes();  
-	minutes = minutes < 10 ? '0'+minutes : minutes;
-	seconds = d.getSeconds(); 
-	seconds = seconds < 10 ? '0'+seconds : seconds;
-	document.getElementById("geoLocationLegend").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;	
-	myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
+
+	if (geoCodeResult) {
+		var d = new Date(); 
+		hours = d.getHours(); 
+		hours = hours < 10 ? '0'+hours : hours;
+		minutes = d.getMinutes();  
+		minutes = minutes < 10 ? '0'+minutes : minutes;
+		seconds = d.getSeconds(); 
+		seconds = seconds < 10 ? '0'+seconds : seconds;
+		document.getElementById("geoLocationLegend").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;	
+		myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
+	} else {
+		document.getElementById("geoLocationLegend").innerHTML = "Location not found!";	
+	}
 	currentLocationMarker.setLatLng(myLatLng);
 	refreshMap("all");
+	spinner.stop();
+	document.getElementById('settingsUL').style.opacity="1";
 }
 	
 function dayOfWeekAsString(dayIndex) {
@@ -113,19 +132,16 @@ function initMap() {
 	console.log("****creating map****");
 	map = L.map('map_canvas').setView(myLatLng, 9);
 
-	L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
-		subdomains	:	'1234',
-		type		:	'osm',
-		minZoom 	:	6,
-		maxZoom		:	18
-	}).addTo(map);
+//	L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
+//		subdomains	:	'1234',
+//		type		:	'osm',
+//		minZoom 	:	6,
+//		maxZoom		:	18
+//	}).addTo(map);
 	
-	if (circle) {
-		map.removeLayer(circle);
-	}
-	circle = L.circle(myLatLng, searchRadius * 1000);
-	map.addLayer(circle);
-	map.fitBounds(circle.getBounds()); 
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+	}).addTo(map);
 		
 	function onLocationFound(e) {
 		console.log("****Running onLocationFound()***");
@@ -172,8 +188,11 @@ function refreshMap(day) {
 
 function getCurrentGPSLocation() {
     console.log("****getCurrentGPSLocation()****");
-	navigator.geolocation.getCurrentPosition(setLocation);
+	navigator.geolocation.getCurrentPosition(setLocation, noLocation);
 	document.getElementById("locResult").innerHTML = ".";
+	var target = document.getElementById("gpsSpin");
+	spinner.spin(target);
+	document.getElementById('settingsUL').style.opacity=".3";
 	function setLocation(location) {
 		var d = new Date(); 
 		hours = d.getHours(); 
@@ -186,6 +205,13 @@ function getCurrentGPSLocation() {
 		document.getElementById("locResult").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;
 		currentLocationMarker.setLatLng(myLatLng);
 		refreshMap("all");
+		spinner.stop();
+		document.getElementById('settingsUL').style.opacity="1";
+	}
+	function noLocation() {
+		document.getElementById("locResult").innerHTML = "Location not found";
+		spinner.stop();
+		document.getElementById('settingsUL').style.opacity="1";	
 	}
 }
 

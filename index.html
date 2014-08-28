@@ -42,13 +42,13 @@
 
 		<div id="settings" dojoType="dojox/mobile/ScrollableView">
 			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Settings</h1>
-			<ul dojoType="dojox/mobile/RoundRectList">
+			<ul id="settingsUL" dojoType="dojox/mobile/RoundRectList">
 				<div id="search-radius" dojoType="dojox.mobile.View">	
-					<div>
+					<div id="gpsSpin">
 						<label><b>Search from current GPS location</b></label>
 						<fieldset><div id="locResult"><legend>Update location </legend></div><button id="locResetBtn" type="button"></button></fieldset>
 					</div>
-					<div>
+					<div id="locSpin">
 						<label><b>Search from this location</b></label>
 						<fieldset id="locForm"><div><legend id="geoLocationLegend">Set location </legend></div>
 							<input 	id="locTextBox"

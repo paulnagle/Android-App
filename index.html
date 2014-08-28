@@ -50,13 +50,17 @@
 					</div>
 					<div>
 						<label><b>Search from this location</b></label>
-						<fieldset><div><legend id="geoLocationLegend">Set location </legend></div>
-							<input 	data-dojo-type="dojox/mobile/TextBox" 
-									placeHolder="Type address, hit enter"
-									data-dojo-props='	maxLength:50,  
-														onChange:function(newValue){ 
-															doClick(newValue); 
-														}' />
+						<fieldset id="locForm"><div><legend id="geoLocationLegend">Set location </legend></div>
+							<input 	id="locTextBox"
+									data-dojo-type="dojox/mobile/TextBox" 
+									placeHolder="Type address, click go!"
+									data-dojo-props='maxLength:50' />
+							<button data-dojo-type="dojox/mobile/Button" 
+									data-dojo-props='label:"Go!", 
+													 onClick:function(e){ 
+														findAddress();
+														return true; 
+													}'></button>
 						</fieldset>
 					</div>	
 					<div>

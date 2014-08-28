@@ -30,15 +30,20 @@ var markerIcon = L.MakiMarkers.icon({
 	size: "l"
 });
 
-function doClick(geocodeLocation) {
-	// Using my personal key here!
-	var geoCodeURL = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur25ubn0%2Crw%3Do5-9w751f&location=' 
-	geoCodeURL += geocodeLocation;
-	geoCodeURL +=', Ireland&callback=renderGeocode';
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = geoCodeURL;
-    document.body.appendChild(script);
+function findAddress() {
+	require(["dijit/registry"], 
+	function(registry){
+		var widget = registry.byId(locTextBox);
+		geocodeLocation = widget.value;
+		// Using my personal key here!
+		var geoCodeURL = 'http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluur25ubn0%2Crw%3Do5-9w751f&location=' 
+		geoCodeURL += geocodeLocation;
+		geoCodeURL +=', Ireland&callback=renderGeocode';
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = geoCodeURL;
+		document.body.appendChild(script);
+	});
 };
 
 function renderGeocode(response) {

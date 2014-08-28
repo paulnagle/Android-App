@@ -119,6 +119,13 @@ function initMap() {
 		minZoom 	:	6,
 		maxZoom		:	18
 	}).addTo(map);
+	
+	if (circle) {
+		map.removeLayer(circle);
+	}
+	circle = L.circle(myLatLng, searchRadius * 1000);
+	map.addLayer(circle);
+	map.fitBounds(circle.getBounds()); 
 		
 	function onLocationFound(e) {
 		console.log("****Running onLocationFound()***");

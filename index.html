@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="css/MarkerCluster.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
 		
-		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>	
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 		<script src="js/leaflet.markercluster.js"></script>
 		<script src="js/Leaflet.MakiMarkers.js"></script>
 		<script src="js/spin.min.js"></script>
@@ -19,7 +19,7 @@
 		<script src="js/main.js"></script>		
 	</head>
 	<body> <div id="wholePage">
-		<div id="homepage" dojoType="dojox.mobile.View" selected="true">
+		<div id="homepage" dojoType="dojox/mobile/ScrollableView" selected="true">
 			<h1 dojoType="dojox/mobile/Heading">NA Ireland - Meeting Finder</h1>
 			<ul dojoType="dojox/mobile/RoundRectList" >
 				<li id="search_all" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
@@ -32,7 +32,7 @@
 					Find Meetings Tomorrow
 				</li>
 				<li id="search_settings" dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="settings">
-					Search Settings
+					Search settings
 				</li>
 				<li dojoType="dojox/mobile/ListItem" icon="img/settings-29x29.jpg" moveTo="contact">
 					Contact
@@ -83,23 +83,7 @@
 					</div>
 				</div>
 			</ul>
-			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search1"  
-				    data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search",
-									 icon1:"img/map_icon-29x29.png",  
-									 selected:false'>Map</li>
-				<li id="tab-list1"    
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search-list", 
-									 icon1:"img/list_icon-29x29.png", 
-									 selected:false'>List</li>
-				<li id="tab-setting1" 
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"settings",    
-									 icon1:"img/settings-29x29.jpg",  
-									 selected:true' >Settings</li>
-			</ul>
+	
 		</div>
 		
 		<div id="search" dojoType="dojox/mobile/ScrollableView">
@@ -108,23 +92,7 @@
 			</div>
        		<div id="map_canvas" style="width: 100%"></div>
  
-			<ul id="tabBar" data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search2"  
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search",      
-									 icon1:"img/map_icon-29x29.png",  
-									 selected:true' >Map</li>
-				<li id="tab-list2"    
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search-list", 
-									 icon1:"img/list_icon-29x29.png", 
-									 selected:false'>List</li>
-				<li id="tab-setting2" 
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"settings",    
-									 icon1:"img/settings-29x29.jpg",  
-									 selected:false'>Settings</li>
-			</ul>
+	
 		</div>
 
 		<div id="search-list" dojoType="dojox/mobile/ScrollableView">
@@ -133,25 +101,11 @@
 				<div id="list_heading"></div>
 				<pre id="output"></pre>
 			</div>  			
-			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
-				<li id="tab-search3"  
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search",   
-									 icon1:"img/map_icon-29x29.png",  
-									 selected:false'>Map</li>
-				<li id="tab-list3"    
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"search-list",    
-									 icon1:"img/list_icon-29x29.png", 
-									 selected:true' >List</li>
-				<li id="tab-setting3" 
-					data-dojo-type="dojox/mobile/TabBarButton" 
-					data-dojo-props='moveTo:"settings", 
-									 icon1:"img/settings-29x29.jpg",  
-									 selected:false'>Settings</li>
-			</ul>
+
 		</div>
 
+		
+		
 		<div id="contact" dojoType="dojox/mobile/ScrollableView">
 			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Contact Details</h1>
 			<ul dojoType="dojox/mobile/RoundRectList" >
@@ -233,8 +187,24 @@
 					<a href="mailto:contact@nanorthernireland.com">Northern Area</a>
 				</li>
 			</ul>
+		</div>	
+		
+		<div id="tabBar" style="margin-top: -49px;">
+			<ul data-dojo-type="dojox/mobile/TabBar" data-dojo-props='fixed:"bottom", fill:"always"'>
+				<li id="tab-search"  
+				    data-dojo-type="dojox/mobile/TabBarButton" 
+					data-dojo-props='moveTo:"search",
+									 icon1:"img/map_icon-29x29.png"'>Map</li>
+				<li id="tab-list"    
+					data-dojo-type="dojox/mobile/TabBarButton" 
+					data-dojo-props='moveTo:"search-list", 
+									 icon1:"img/list_icon-29x29.png"'>List</li>
+				<li id="tab-setting" 
+					data-dojo-type="dojox/mobile/TabBarButton" 
+					data-dojo-props='moveTo:"settings",    
+									 icon1:"img/settings-29x29.jpg",
+									 selected:"true"'>Settings</li>
+			</ul>
 		</div>		
-		
-		
 	</div></body>
 </html>

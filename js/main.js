@@ -18,7 +18,7 @@ var searchSat = 1;
 var opts = {
     className: 'spinnerDiv', // The CSS class to assign to the spinner
     zIndex: 2e9, // The z-index (defaults to 2000000000)
-    top: '50%', // Top position relative to parent in px
+    top: '25%', // Top position relative to parent in px
     left: '50%' // Left position relative to parent in px
 };
 
@@ -130,7 +130,8 @@ function initMap() {
 	myLatLng = L.latLng(53.341318, -6.270205); // Irish Service Office
 
 	console.log("****creating map****");
-	map = L.map('map_canvas').setView(myLatLng, 9);
+	map = L.map('map_canvas');
+	map.setView(myLatLng, 9);
 
 //	L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
 //		subdomains	:	'1234',
@@ -183,6 +184,7 @@ function refreshMap(day) {
 	}
 	circle = L.circle(myLatLng, searchRadius * 1000);
 	map.addLayer(circle);
+	map.fitBounds(circle.getBounds());
 	runSearch(day);
 }
 
@@ -309,7 +311,7 @@ function runSearch(day) {
 					markerContent += myLatLng.lat + ',' + myLatLng.lng;
 					markerContent += '&daddr=' 
 					markerContent += datum.latitude + ',' + datum.longitude;
-					markerContent +='">Click here for directions</a>';
+					markerContent +='">Directions</a>';
 											
 					li = new ListItem({
 						"label"          : markerContent,
@@ -337,60 +339,32 @@ function runSearch(day) {
 	});	
 }
 
-function selectSearch() {
-	dijit.registry.byId("tab-search1").set('selected', true);
-	dijit.registry.byId("tab-search2").set('selected', true);
-	dijit.registry.byId("tab-search3").set('selected', true);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);	
+function selectTab(tabname){
+	require(["dijit/registry"], 
+	function(registry){
+		if (tabname === "tab-search") {
+			registry.byId("tab-search").set('selected', true);
+			registry.byId("tab-list").set('selected', false);
+			registry.byId("tab-setting").set('selected', false);
+		} else if (tabname === "tab-list") {
+			registry.byId("tab-search").set('selected', false);
+			registry.byId("tab-list").set('selected', true);
+			registry.byId("tab-setting").set('selected', false);		
+		} else if (tabname === "tab-settings") {
+			registry.byId("tab-search").set('selected', false);
+			registry.byId("tab-list").set('selected', false);
+			registry.byId("tab-setting").set('selected', true);		
+		}
+	});
 }
 
-function selectList() {
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', true);
-	dijit.registry.byId("tab-list2").set('selected', true);
-	dijit.registry.byId("tab-list3").set('selected', true);
-	dijit.registry.byId("tab-setting1").set('selected', false);
-	dijit.registry.byId("tab-setting2").set('selected', false);
-	dijit.registry.byId("tab-setting3").set('selected', false);	
-}
-
-function selectSetting(){
-	dijit.registry.byId("tab-search1").set('selected', false);
-	dijit.registry.byId("tab-search2").set('selected', false);
-	dijit.registry.byId("tab-search3").set('selected', false);
-	dijit.registry.byId("tab-list1").set('selected', false);
-	dijit.registry.byId("tab-list2").set('selected', false);
-	dijit.registry.byId("tab-list3").set('selected', false);
-	dijit.registry.byId("tab-setting1").set('selected', true);
-	dijit.registry.byId("tab-setting2").set('selected', true);
-	dijit.registry.byId("tab-setting3").set('selected', true);	
-}
-
-dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectSearch(); refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectSearch(); refreshMap("today");});});
-dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectSearch(); refreshMap("tomorrow");});});
-dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectSetting();});});
-
-
-dojo.addOnLoad( function(){dojo.query('#tab-search1').onclick( function(evt){selectSearch(); refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#tab-search2').onclick( function(evt){selectSearch(); refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#tab-search3').onclick( function(evt){selectSearch(); refreshMap("all");});});
-
-dojo.addOnLoad( function(){dojo.query('#tab-list1').onclick( function(evt){ selectList();});});
-dojo.addOnLoad( function(){dojo.query('#tab-list2').onclick( function(evt){ selectList();});});
-dojo.addOnLoad( function(){dojo.query('#tab-list3').onclick( function(evt){ selectList();});});
-
-dojo.addOnLoad( function(){dojo.query('#tab-setting1').onclick( function(evt){ selectSetting();});});
-dojo.addOnLoad( function(){dojo.query('#tab-setting2').onclick( function(evt){ selectSetting();});});
-dojo.addOnLoad( function(){dojo.query('#tab-setting3').onclick( function(evt){ selectSetting();});});
-
+dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); refreshMap("all");});});
+dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); refreshMap("today");});});
+dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); refreshMap("tomorrow");});});
+dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectTab("tab-settings");});});
+dojo.addOnLoad( function(){dojo.query('#tab-search').onclick( function(evt){selectTab("tab-search"); refreshMap("all");});});
+dojo.addOnLoad( function(){dojo.query('#tab-list').onclick( function(evt){ selectTab("tab-list");});});
+dojo.addOnLoad( function(){dojo.query('#tab-setting').onclick( function(evt){ selectTab("tab-setting");});});
 
 // This is run when the page is initially loaded and ready	
 // Main purpose is to build the settings panel, and the

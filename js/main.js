@@ -1,9 +1,8 @@
 // Dont forget to comment all of this
 var map = null;
-var myLatLng = new L.latLng();
+var myLatLng = new L.latLng(53.341318, -6.270205); // Irish Service Office
 var circle = null;
 var currentLocationMarker = null;
-var markerClusterer = new L.markerClusterGroup();
 var searchRadius = 25;  // default to 25km
   
 // Store these in an array that we can save the state of?
@@ -38,6 +37,56 @@ var markerIcon = L.MakiMarkers.icon({
 	color: "#0a0",
 	size: "l"
 });
+
+function deleteMap() {
+	console.log("****Running deleteMap()***");
+	if (circle) {
+		delete circle;
+	}
+
+	if (currentLocationMarker) {
+		delete currentLocationMarker;
+	}
+
+	if (map) {
+		map.remove();
+	}
+}
+
+function newMap(latLng, radius, days) {
+	console.log("****Running newMap()***");
+	deleteMap();
+	var mapNode = document.getElementById("map_canvas");
+	
+	var topBarHeight = document.getElementById('topBar').clientHeight;
+	var tabBarHeight = document.getElementById('tabBar').clientHeight;
+	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
+	document.getElementById("map_canvas").style.height = newHeight + "px";	
+	console.log("=========Map div height = " + newHeight + "px ==========");
+	
+	console.log("****creating map****");
+	map = L.map('map_canvas');
+	map.setView(latLng, 9);
+
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+		
+	if (circle) {
+		map.removeLayer(circle);
+	}
+	circle = L.circle(latLng, radius * 1000);
+	circle.addTo(map);
+	map.fitBounds(circle.getBounds());  		
+	
+	currentLocationMarker = new L.marker(latLng, {draggable: true, icon: markerIcon}).addTo(map);
+	currentLocationMarker.bindPopup("This is where you are searching from. Drag this marker to search in another location");
+	currentLocationMarker.on('dragend', function(e){
+		myLatLng = e.target.getLatLng();
+		newMap(myLatLng, radius, days);
+	}); 
+	runSearch(days);
+}
 
 function findAddress() {
 	require(["dijit/registry"], 
@@ -76,7 +125,7 @@ function renderGeocode(response) {
 		document.getElementById("geoLocationLegend").innerHTML = "Location not found!";	
 	}
 	currentLocationMarker.setLatLng(myLatLng);
-	refreshMap("all");
+	newMap(myLatLng, searchRadius, "all");
 	spinner.stop();
 	document.getElementById('settingsUL').style.opacity="1";
 }
@@ -87,106 +136,17 @@ function dayOfWeekAsString(dayIndex) {
 
 function spinMap(spinFlag) {	
 	if (spinFlag == true ) {
-		console.log("****spinning map => " + spinFlag);
 		map.spin(true);
 		if (currentLocationMarker) {
 			currentLocationMarker.setOpacity(0);
 		}
 	} else {
-		console.log("****spinning map => " + spinFlag);
 		map.spin(false);
 		if (currentLocationMarker) {
 			currentLocationMarker.setOpacity(1);
 		}
 	}
 }	
-
-function initMap() {
-	console.log("****Running initMap()***");
-	var mapNode = document.getElementById("map_canvas");
-	
-	function setMapHeight() {
-		var topBarHeight = document.getElementById('topBar').clientHeight;
-		var tabBarHeight = document.getElementById('tabBar').clientHeight;
-		var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
-		mapNode.style.height = newHeight + "px";	
-	}
-
-	function doOnOrientationChange() {
-		switch(window.orientation) {  
-			case -90:
-			case 90:
-				setMapHeight();
-				break; 
-			default:
-				setMapHeight();
-				break; 
-		}
-	}
-
-	window.addEventListener('orientationchange', doOnOrientationChange);
-	setMapHeight();
-	
-	myLatLng = L.latLng(53.341318, -6.270205); // Irish Service Office
-
-	console.log("****creating map****");
-	map = L.map('map_canvas');
-	map.setView(myLatLng, 9);
-
-//	L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {
-//		subdomains	:	'1234',
-//		type		:	'osm',
-//		minZoom 	:	6,
-//		maxZoom		:	18
-//	}).addTo(map);
-	
-	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-	}).addTo(map);
-		
-	function onLocationFound(e) {
-		console.log("****Running onLocationFound()***");
-		currentLocationMarker = new L.marker(e.latlng, {draggable: true, icon: markerIcon}).addTo(map);
-
-		currentLocationMarker.on('dragend', function(e){
-			myLatLng = e.target.getLatLng();
-			refreshMap("all");
-		});
-		 
-		if (circle) {
-			map.removeLayer(circle);
-		}
-		circle = L.circle(e.latlng, searchRadius * 1000);
-		map.addLayer(circle);
-		myLatLng = e.latlng;
-		map.fitBounds(circle.getBounds());   
-	}
-
-	function onLocationError(e) {
-	    console.log("****onLocationError()****");	
-		currentLocationMarker = new L.marker(myLatLng, {draggable: true, icon: markerIcon}).addTo(map);
-
-		currentLocationMarker.on('dragend', function(e){
-			myLatLng = e.target.getLatLng();
-			refreshMap("all");
-		});
-	}
-
-	map.on('locationfound', onLocationFound);
-	map.on('locationerror', onLocationError);
-	map.locate({setView: true});
-}
-
-function refreshMap(day) {
-	console.log("****Running refreshMap()****");
-	if (circle) {
-		map.removeLayer(circle);
-	}
-	circle = L.circle(myLatLng, searchRadius * 1000);
-	map.addLayer(circle);
-	map.fitBounds(circle.getBounds());
-	runSearch(day);
-}
 
 function getCurrentGPSLocation() {
     console.log("****getCurrentGPSLocation()****");
@@ -205,8 +165,7 @@ function getCurrentGPSLocation() {
 		seconds = seconds < 10 ? '0'+seconds : seconds;
 		myLatLng = L.latLng(location.coords.latitude, location.coords.longitude);
 		document.getElementById("locResult").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;
-		currentLocationMarker.setLatLng(myLatLng);
-		refreshMap("all");
+		newMap(myLatLng, searchRadius, "all");
 		spinner.stop();
 		document.getElementById('settingsUL').style.opacity="1";
 	}
@@ -250,10 +209,16 @@ function setupSwitches(day) {
 			var n = d.getDay();
 			
 			if (day == "today") {
+				if (n == 7) {  // It's Sunday
+					n = 0;
+				}
 				console.log("Enable sw_" + dayOfWeekAsString(n+1).toLowerCase());
 				search_day = "sw_" +  dayOfWeekAsString(n+1).toLowerCase();
 			} else {
 				if (day == "tomorrow") {
+					if (n >= 6) {  // It's Saturday
+						n = n-7;
+					}
 					console.log("Enable sw_" + dayOfWeekAsString(n+2).toLowerCase());
 					search_day = "sw_" +  dayOfWeekAsString(n+2).toLowerCase();
 				}
@@ -285,18 +250,21 @@ function runSearch(day) {
 		domConstruct.empty("output");
 		var ul  = new RoundRectList({}, domConstruct.create("ul",{}, this.output) );
 		ul.startup();
+		console.log("******Spin map TRUE at the start of runSearch**");
 		spinMap(true);
-		markerClusterer.clearLayers();
+
 		var xhrArgs = {
 	        url: search_url,
 			handleAs:"json",
-			timeout: 10000,
-			error: function(){
-				spinMap(false);
-				alert("Search timed out after 10sec. This app relies on your internet connection. Press the Map button to try again.");
-				},
+			timeout: 100000,
+//			error: function(e){
+//					console.log("******Spin map FALSE in dojo ajax error**");
+//				spinMap(false);
+//				alert("Search error! This app relies on your internet connection. Press the Map button to try again." + e);
+//				},
 			load: function(data){				
 				var i = 0;
+				var markerClusterer = new L.markerClusterGroup();
 				dojo.forEach(data, function(datum) { 
 					i++;
 					
@@ -326,6 +294,7 @@ function runSearch(day) {
 					aMarker.bindPopup(markerContent);
 					markerClusterer.addLayer(aMarker);
 				});	
+				console.log("******Spin map FALSE end of dojo ajax**");
 				spinMap(false);
 				// Add the markerClusterer layer to the map
 				map.addLayer(markerClusterer);	
@@ -333,9 +302,6 @@ function runSearch(day) {
 			}
 		}
 		var deferred = dojo.xhrGet(xhrArgs);
-
-		console.log("Adjusting mapzoom to circle size in runSearch()");
-		map.fitBounds(circle.getBounds());
 	});	
 }
 
@@ -358,11 +324,17 @@ function selectTab(tabname){
 	});
 }
 
-dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); refreshMap("all");});});
-dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); refreshMap("today");});});
-dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); refreshMap("tomorrow");});});
+dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});});
+dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "today");});});
+dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "tomorrow");});});
 dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectTab("tab-settings");});});
-dojo.addOnLoad( function(){dojo.query('#tab-search').onclick( function(evt){selectTab("tab-search"); refreshMap("all");});});
+dojo.addOnLoad( function(){
+					dojo.query('#tab-search').onclick( function(evt){
+						console.log("!!!!!!!!!!!tab-search onlick called!!!!!");
+						selectTab("tab-search"); 
+						newMap(myLatLng, searchRadius, "all");
+					});
+				});
 dojo.addOnLoad( function(){dojo.query('#tab-list').onclick( function(evt){ selectTab("tab-list");});});
 dojo.addOnLoad( function(){dojo.query('#tab-setting').onclick( function(evt){ selectTab("tab-setting");});});
 
@@ -497,5 +469,5 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	});			
 	
 	// Initialise the map
-	initMap();
+	newMap(myLatLng, searchRadius, "all");
 });			

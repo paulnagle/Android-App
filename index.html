@@ -22,7 +22,10 @@
 		<div id="homepage" dojoType="dojox/mobile/ScrollableView" selected="true">
 			<h1 dojoType="dojox/mobile/Heading">NA Ireland - Meeting Finder</h1>
 			<ul dojoType="dojox/mobile/RoundRectList" >
-				<li id="search_all" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
+				<li id="search_all" 
+					dojoType="dojox/mobile/ListItem" 
+					icon="img/search-29x29.png"  
+					moveTo="search" >
 					Search For Meetings 
 				</li>
 				<li id="search_today" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">
@@ -99,7 +102,7 @@
 			<h1 dojoType="dojox/mobile/Heading" data-dojo-props='fixed:"top"' back="Home" moveTo="homepage">Search</h1>
        		<div id="search-list-result" >
 				<div id="list_heading"></div>
-				<pre id="output"></pre>
+				<div id="output"></div>
 			</div>  			
 
 		</div>

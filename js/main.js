@@ -124,6 +124,7 @@ function renderGeocode(response) {
 	} else {
 		document.getElementById("geoLocationLegend").innerHTML = "Location not found!";	
 	}
+	
 	currentLocationMarker.setLatLng(myLatLng);
 	newMap(myLatLng, searchRadius, "all");
 	spinner.stop();
@@ -155,6 +156,7 @@ function getCurrentGPSLocation() {
 	var target = document.getElementById("gpsSpin");
 	spinner.spin(target);
 	document.getElementById('settingsUL').style.opacity=".3";
+	
 	function setLocation(location) {
 		var d = new Date(); 
 		hours = d.getHours(); 
@@ -169,6 +171,7 @@ function getCurrentGPSLocation() {
 		spinner.stop();
 		document.getElementById('settingsUL').style.opacity="1";
 	}
+	
 	function noLocation() {
 		document.getElementById("locResult").innerHTML = "Location not found";
 		spinner.stop();
@@ -225,6 +228,11 @@ function setupSwitches(day) {
 			}
 			var widget = registry.byId(search_day);
 			widget.set("value", "on"); // "on" or "off" can be set
+		} else {
+			for (i = 0; i < switches.length; i++) {
+				var widget = registry.byId(switches[i]);
+				widget.set("value", "on"); // "on" or "off" can be set
+			}
 		}
 	});
 }
@@ -324,19 +332,7 @@ function selectTab(tabname){
 	});
 }
 
-dojo.addOnLoad( function(){dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});});
-dojo.addOnLoad( function(){dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "today");});});
-dojo.addOnLoad( function(){dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "tomorrow");});});
-dojo.addOnLoad( function(){dojo.query('#search_settings').onclick( function(evt){selectTab("tab-settings");});});
-dojo.addOnLoad( function(){
-					dojo.query('#tab-search').onclick( function(evt){
-						console.log("!!!!!!!!!!!tab-search onlick called!!!!!");
-						selectTab("tab-search"); 
-						newMap(myLatLng, searchRadius, "all");
-					});
-				});
-dojo.addOnLoad( function(){dojo.query('#tab-list').onclick( function(evt){ selectTab("tab-list");});});
-dojo.addOnLoad( function(){dojo.query('#tab-setting').onclick( function(evt){ selectTab("tab-setting");});});
+
 
 // This is run when the page is initially loaded and ready	
 // Main purpose is to build the settings panel, and the
@@ -467,6 +463,14 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 			searchSat = 1; 
 		}
 	});			
+	
+	dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});
+	dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "today");});
+	dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "tomorrow");});
+	dojo.query('#search_settings').onclick( function(evt){selectTab("tab-settings");});
+	dojo.query('#tab-search').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});
+	dojo.query('#tab-list').onclick( function(evt){ selectTab("tab-list");});
+	dojo.query('#tab-setting').onclick( function(evt){ selectTab("tab-setting");});
 	
 	// Initialise the map
 	newMap(myLatLng, searchRadius, "all");

@@ -65,16 +65,13 @@ function newMap(latLng, radius, days) {
 	console.log("=========Map div height = " + newHeight + "px ==========");
 	
 	console.log("****creating map****");
-	map = L.map('map_canvas');
-	map.setView(latLng, 9);
-
-	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+	
+	var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
     	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
-		
-	if (circle) {
-		map.removeLayer(circle);
-	}
+	});
+
+	map = L.map('map_canvas', {center: latLng, zoom: 9, layers: [tiles]});
+
 	circle = L.circle(latLng, radius * 1000);
 	circle.addTo(map);
 	map.fitBounds(circle.getBounds());  		
@@ -241,14 +238,11 @@ function runSearch(day) {
 	require([
 		"dojo/json", 
 		"dojo/dom", 
-		"dojo/dom-construct", 
-		"dojo/on", 
+		"dojo/dom-construct",  
 		"dojox/mobile/RoundRectList",
 		"dojox/mobile/ListItem",
-		"dojo/_base/xhr",
-		"dijit/registry",
-		"dojo/domReady!"], 
-	function(JSON, dom, domConstruct, on, RoundRectList, ListItem, xhr, registry){
+		"dojo/_base/xhr"], 
+	function(JSON, dom, domConstruct, RoundRectList, ListItem, xhr){
 		console.log("****Running runSearch()****");
 
 		setupSwitches(day);				
@@ -264,12 +258,11 @@ function runSearch(day) {
 		var xhrArgs = {
 	        url: search_url,
 			handleAs:"json",
-			timeout: 100000,
-//			error: function(e){
-//					console.log("******Spin map FALSE in dojo ajax error**");
-//				spinMap(false);
-//				alert("Search error! This app relies on your internet connection. Press the Map button to try again." + e);
-//				},
+			timeout: 10000,
+			error: function(e){
+				spinMap(false);
+				alert("Search error! This app relies on your internet connection. Press the Map button to try again." + e);
+				},
 			load: function(data){				
 				var i = 0;
 				var markerClusterer = new L.markerClusterGroup();
@@ -288,7 +281,7 @@ function runSearch(day) {
 					markerContent += '&daddr=' 
 					markerContent += datum.latitude + ',' + datum.longitude;
 					markerContent +='">Directions</a>';
-											
+					
 					li = new ListItem({
 						"label"          : markerContent,
 						"variableHeight" : "true",

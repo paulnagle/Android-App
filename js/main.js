@@ -56,7 +56,6 @@ function deleteMap() {
 function newMap(latLng, radius, days) {
 	console.log("****Running newMap()***");
 	deleteMap();
-	var mapNode = document.getElementById("map_canvas");
 	
 	var topBarHeight = document.getElementById('topBar').clientHeight;
 	var tabBarHeight = document.getElementById('tabBar').clientHeight;

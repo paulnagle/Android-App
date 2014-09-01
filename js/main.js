@@ -24,7 +24,8 @@ var opts = {
 
 var spinner = new Spinner(opts);
 
-//Extend the Default marker class
+// Extend the Default marker class
+// Each one of these markers on the map represents a meeting
 var NaIcon = L.Icon.Default.extend({
 	options: {
 		iconUrl: 'img/marker-icon-red.png' // photoshop this image to add an approximation of the NA symbol
@@ -33,12 +34,15 @@ var NaIcon = L.Icon.Default.extend({
 var naIcon = new NaIcon();
 
 // https://www.mapbox.com/maki/
+// There should only be one of these marker on the map, representing where the meeting search
+// is centered.
 var markerIcon = L.MakiMarkers.icon({
 	icon: "marker",
 	color: "#0a0",
 	size: "l"
 });
 
+// This function cleans up and deletes any old Maps
 function deleteMap() {
 	console.log("****Running deleteMap()***");
 	if (circle) {
@@ -59,6 +63,8 @@ function deleteMap() {
 	}
 }
 
+// This function creates a new map, adds the Circle, the current location marker and
+// then runs a new search.
 function newMap(latLng, radius, days) {
 	console.log("****Running newMap()***");
 	deleteMap();
@@ -75,9 +81,11 @@ function newMap(latLng, radius, days) {
     	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
 	});
 
-	map = L.map('map_canvas', {center: latLng, zoom: 9, layers: [tiles]});
+	map = L.map('map_canvas', {	center: latLng, 
+								zoom: 9, 
+								layers: [tiles]});
 
-	circle = L.circle(latLng, radius * 1000);
+	circle = L.circle(latLng, radius * 1000, {fillOpacity: 0.1});
 	circle.addTo(map);
 	map.fitBounds(circle.getBounds());  		
 	
@@ -90,6 +98,8 @@ function newMap(latLng, radius, days) {
 	runSearch(days);
 }
 
+// This function reads the address in the locTextBox and does a geocode search for that location
+// When the location is found, the function renderGeocode is called
 function findAddress() {
 	require(["dijit/registry"], 
 	function(registry){
@@ -109,6 +119,8 @@ function findAddress() {
 	});
 };
 
+// This function is called from findAddress when the search for the location is complete.
+// If the search was sucessful, the newMap() function is called with the new location
 function renderGeocode(response) {
     var html = '';  
 	var geoCodeResult = response.results[0].locations[0];	
@@ -132,11 +144,13 @@ function renderGeocode(response) {
 	spinner.stop();
 	document.getElementById('settingsUL').style.opacity="1";
 }
-	
+
+// This function converts a number to a day of the week	
 function dayOfWeekAsString(dayIndex) {
 	return ["not a day?", "Sun", "Mon","Tue","Wed","Thu","Fri","Sat"][dayIndex];
 }
 
+// This function either starts the AJAX spinner on the map, or stops it.. depending on the flag passed
 function spinMap(spinFlag) {	
 	if (spinFlag == true ) {
 		map.spin(true);
@@ -153,6 +167,8 @@ function spinMap(spinFlag) {
 	}
 }	
 
+// This function uses the browser function to find our current GPS location. If the location
+// is found OK, the newMap() function is called with the location.
 function getCurrentGPSLocation() {
     console.log("****getCurrentGPSLocation()****");
 	navigator.geolocation.getCurrentPosition(setLocation, noLocation);
@@ -183,6 +199,7 @@ function getCurrentGPSLocation() {
 	}
 }
 
+// This function generates the URL to query the BMLT based on the settings in the Settings Panel
 function buildSearchURL () {
 	console.log("****Running buildSearchURL()****");	
 	search_url = "http://www.nasouth.ie/bmlt/main_server/client_interface/json/";
@@ -202,6 +219,8 @@ function buildSearchURL () {
 	console.log("====SEARCH URL====" + search_url);
 }
 
+// This function sets the days of the week that we want to search, based on the button the user has clicked
+// on the app.
 function setupSwitches(day) {
 	console.log("****Running setupSwitches()****");
 	require(["dijit/registry"], 
@@ -241,6 +260,7 @@ function setupSwitches(day) {
 	});
 }
 
+// This function runs the query to the BMLT and displays the results on the map
 function runSearch(day) {
 	require([
 		"dojo/json", 
@@ -272,7 +292,8 @@ function runSearch(day) {
 				},
 			load: function(data){				
 				var i = 0;
-				var markerClusterer = new L.markerClusterGroup();
+				var markerClusterer = new L.markerClusterGroup({showCoverageOnHover: false, 
+																removeOutsideVisibleBounds: false});
 				dojo.forEach(data, function(datum) { 
 					i++;
 					
@@ -313,6 +334,7 @@ function runSearch(day) {
 	});	
 }
 
+// This function sets the correct TAB along the bottom of the screen to be highlighted
 function selectTab(tabname){
 	require(["dijit/registry"], 
 	function(registry){

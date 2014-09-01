@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.css" />
 		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.10.0/dojox/mobile/themes/common/domButtons/DomButtonRedBadge.css"/>
 		
 		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 		<script src="js/leaflet.markercluster.js"></script>
@@ -24,8 +25,9 @@
 			<ul dojoType="dojox/mobile/RoundRectList" >
 				<li id="search_all" 
 					dojoType="dojox/mobile/ListItem" 
-					icon="img/search-29x29.png"  
-					moveTo="search" >
+					 data-dojo-props='icon:"img/search-29x29.png",
+                         moveTo:"search",
+                         transition:"slide"'>
 					Search For Meetings 
 				</li>
 				<li id="search_today" dojoType="dojox/mobile/ListItem" icon="img/search-29x29.png"  moveTo="search">

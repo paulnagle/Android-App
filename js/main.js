@@ -268,8 +268,9 @@ function runSearch(day) {
 		"dojo/dom-construct",  
 		"dojox/mobile/RoundRectList",
 		"dojox/mobile/ListItem",
-		"dojo/_base/xhr"], 
-	function(JSON, dom, domConstruct, RoundRectList, ListItem, xhr){
+		"dojo/_base/xhr",
+		"dijit/registry"], 
+	function(JSON, dom, domConstruct, RoundRectList, ListItem, xhr, registry){
 		console.log("****Running runSearch()****");
 		
 		setupSwitches(day);				
@@ -328,6 +329,7 @@ function runSearch(day) {
 				// Add the markerClusterer layer to the map
 				map.addLayer(markerClusterer);	
 				document.getElementById("list_heading").innerHTML= '<h3 align="center">' + i + '&nbsp;Meetings</h3>';
+				registry.byId("tab-list").set('badge', i);
 			}
 		}
 		var deferred = dojo.xhrGet(xhrArgs);

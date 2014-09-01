@@ -4,7 +4,8 @@ var myLatLng = new L.latLng(53.341318, -6.270205); // Irish Service Office
 var circle = null;
 var currentLocationMarker = null;
 var searchRadius = 25;  // default to 25km
-  
+var isMapSpinning = false;
+ 
 // Store these in an array that we can save the state of?
 var searchSun = 1;
 var searchMon = 1;
@@ -50,6 +51,11 @@ function deleteMap() {
 
 	if (map) {
 		map.remove();
+	}
+	
+	// This should stop any spurious spinning!
+	if (isMapSpinning) {
+		spinMap(false);
 	}
 }
 
@@ -134,11 +140,13 @@ function dayOfWeekAsString(dayIndex) {
 function spinMap(spinFlag) {	
 	if (spinFlag == true ) {
 		map.spin(true);
+		isMapSpinning = true;
 		if (currentLocationMarker) {
 			currentLocationMarker.setOpacity(0);
 		}
 	} else {
 		map.spin(false);
+		isMapSpinning = false;
 		if (currentLocationMarker) {
 			currentLocationMarker.setOpacity(1);
 		}
@@ -243,7 +251,7 @@ function runSearch(day) {
 		"dojo/_base/xhr"], 
 	function(JSON, dom, domConstruct, RoundRectList, ListItem, xhr){
 		console.log("****Running runSearch()****");
-
+		
 		setupSwitches(day);				
 		buildSearchURL();
 		
@@ -323,8 +331,6 @@ function selectTab(tabname){
 		}
 	});
 }
-
-
 
 // This is run when the page is initially loaded and ready	
 // Main purpose is to build the settings panel, and the
@@ -467,3 +473,4 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	// Initialise the map
 	newMap(myLatLng, searchRadius, "all");
 });			
+

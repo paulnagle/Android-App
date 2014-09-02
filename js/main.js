@@ -5,6 +5,7 @@ var circle = null;
 var currentLocationMarker = null;
 var searchRadius = 25;  // default to 25km
 var isMapSpinning = false;
+var hasSearchChanged = true; // We only want to run a new search if the search settings have changed.
  
 // Store these in an array that we can save the state of?
 var searchSun = 1;
@@ -34,7 +35,7 @@ var NaIcon = L.Icon.Default.extend({
 var naIcon = new NaIcon();
 
 // https://www.mapbox.com/maki/
-// There should only be one of these marker on the map, representing where the meeting search
+// There should only be one of these markers on the map, representing where the meeting search
 // is centered.
 var markerIcon = L.MakiMarkers.icon({
 	icon: "marker",
@@ -67,35 +68,36 @@ function deleteMap() {
 // then runs a new search.
 function newMap(latLng, radius, days) {
 	console.log("****Running newMap()***");
+
 	deleteMap();
 	
-	var topBarHeight = document.getElementById('topBar').clientHeight;
-	var tabBarHeight = document.getElementById('tabBar').clientHeight;
-	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
-	document.getElementById("map_canvas").style.height = newHeight + "px";	
-	console.log("=========Map div height = " + newHeight + "px ==========");
-	
 	console.log("****creating map****");
+	map = L.map('map_canvas');
 	
-	var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-    	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-	});
+	map.on('load', function(e) {  
+		console.log("****map load event****");
 
-	map = L.map('map_canvas', {	center: latLng, 
-								zoom: 9, 
-								layers: [tiles]});
-
-	circle = L.circle(latLng, radius * 1000, {fillOpacity: 0.1});
-	circle.addTo(map);
-	map.fitBounds(circle.getBounds());  		
+		circle = L.circle(latLng, radius * 1000, {fillOpacity: 0.1});
+		circle.addTo(map);
+		map.fitBounds(circle.getBounds());  		
 	
-	currentLocationMarker = new L.marker(latLng, {draggable: true, icon: markerIcon}).addTo(map);
-	currentLocationMarker.bindPopup("This is where you are searching from. Drag this marker to search in another location");
-	currentLocationMarker.on('dragend', function(e){
-		myLatLng = e.target.getLatLng();
-		newMap(myLatLng, radius, days);
-	}); 
-	runSearch(days);
+		currentLocationMarker = new L.marker(latLng, {draggable: true, icon: markerIcon}).addTo(map);
+		currentLocationMarker.bindPopup("This is where you are searching from. Drag this marker to search in another location");
+		currentLocationMarker.on('dragend', function(e){
+			myLatLng = e.target.getLatLng();
+			hasSearchChanged = true;
+			newMap(myLatLng, radius, days);
+		}); 
+		runSearch(days);
+    });
+	
+	console.log("****Adding tile Layer to Map****");	
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+	
+	console.log("****map.setView****");		
+	map.setView(latLng, 9);
 }
 
 // This function reads the address in the locTextBox and does a geocode search for that location
@@ -135,12 +137,12 @@ function renderGeocode(response) {
 		seconds = seconds < 10 ? '0'+seconds : seconds;
 		document.getElementById("geoLocationLegend").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;	
 		myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
+		hasSearchChanged = true;
 	} else {
 		document.getElementById("geoLocationLegend").innerHTML = "Location not found!";	
 	}
 	
 	currentLocationMarker.setLatLng(myLatLng);
-	newMap(myLatLng, searchRadius, "all");
 	spinner.stop();
 	document.getElementById('settingsUL').style.opacity="1";
 }
@@ -187,7 +189,10 @@ function getCurrentGPSLocation() {
 		seconds = seconds < 10 ? '0'+seconds : seconds;
 		myLatLng = L.latLng(location.coords.latitude, location.coords.longitude);
 		document.getElementById("locResult").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;
-		newMap(myLatLng, searchRadius, "all");
+		hasSearchChanged = true;
+//		if (hasSearchChanged == true) { // ???
+//			newMap(myLatLng, searchRadius, "all");
+//		}
 		spinner.stop();
 		document.getElementById('settingsUL').style.opacity="1";
 	}
@@ -234,14 +239,15 @@ function setupSwitches(day) {
 			var d = new Date();
 			var n = d.getDay();
 			
+			// Just switch on today's switch
 			if (day == "today") {
-				if (n == 7) {  // It's Sunday
+				if (n == 7) { // It's Sunday
 					n = 0;
 				}
 				console.log("Enable sw_" + dayOfWeekAsString(n+1).toLowerCase());
 				search_day = "sw_" +  dayOfWeekAsString(n+1).toLowerCase();
 			} else {
-				if (day == "tomorrow") {
+				if (day == "tomorrow") { // Just switch on tomorrow's switch
 					if (n >= 6) {  // It's Saturday
 						n = n-7;
 					}
@@ -330,6 +336,7 @@ function runSearch(day) {
 				map.addLayer(markerClusterer);	
 				document.getElementById("list_heading").innerHTML= '<h3 align="center">' + i + '&nbsp;Meetings</h3>';
 				registry.byId("tab-list").set('badge', i);
+				hasSearchChanged = false; 
 			}
 		}
 		var deferred = dojo.xhrGet(xhrArgs);
@@ -394,7 +401,8 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 		"type"	:	"range", 
 		"intermediateChanges" : true,
 		"style"	:	"width:90%;",
-		"onChange" : function(newValue){ 	
+		"onChange" : function(newValue){ 
+			hasSearchChanged = true;		
 			searchRadius =  newValue; 
 			document.getElementById('radiusLabel').innerHTML= "&nbsp;Search radius =&nbsp;" + searchRadius + "&nbsp;kms";	
 		}
@@ -407,6 +415,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_sun.startup();
 	var sw_sun_listen = registry.byId("sw_sun");
 	sw_sun_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchSun = -1;
 		} else {
@@ -419,6 +428,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_mon.startup();
 	var sw_mon_listen = registry.byId("sw_mon");
 	sw_mon_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchMon = -1;
 		} else {
@@ -431,6 +441,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_tue.startup();
 	var sw_tue_listen = registry.byId("sw_tue");
 	sw_tue_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchTue = -1;
 		} else {
@@ -443,6 +454,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_wed.startup();
 	var sw_wed_listen = registry.byId("sw_wed");
 	sw_wed_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchWed = -1;
 		} else {
@@ -455,6 +467,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_thu.startup();
 	var sw_thu_listen = registry.byId("sw_thu");
 	sw_thu_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchThu = -1;
 		} else {
@@ -467,6 +480,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_fri.startup();
 	var sw_fri_listen = registry.byId("sw_fri");
 	sw_fri_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchFri = -1;
 		} else {
@@ -479,6 +493,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_sat.startup();					
 	var sw_sat_listen = registry.byId("sw_sat");
 	sw_sat_listen.on("stateChanged", function(newState){
+		hasSearchChanged = true;
 		if (newState == "off") {
 			searchSat = -1;
 		} else {
@@ -486,15 +501,62 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 		}
 	});			
 	
-	dojo.query('#search_all').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});
-	dojo.query('#search_today').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "today");});
-	dojo.query('#search_tomorrow').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "tomorrow");});
-	dojo.query('#search_settings').onclick( function(evt){selectTab("tab-settings");});
-	dojo.query('#tab-search').onclick( function(evt){selectTab("tab-search"); newMap(myLatLng, searchRadius, "all");});
-	dojo.query('#tab-list').onclick( function(evt){ selectTab("tab-list");});
-	dojo.query('#tab-setting').onclick( function(evt){ selectTab("tab-setting");});
+	dojo.query('#search_all').onclick( function(evt){
+		console.log("****search_all onclick event****");
+		selectTab("tab-search"); 
+		if (hasSearchChanged == true ) {
+			newMap(myLatLng, searchRadius, "all");
+		}
+	});
 	
+	dojo.query('#search_today').onclick( function(evt){
+		console.log("****search_today onclick event****");	
+		selectTab("tab-search"); 
+		if (hasSearchChanged == true ) {		
+			newMap(myLatLng, searchRadius, "today");
+		}
+	});
+	
+	dojo.query('#search_tomorrow').onclick( function(evt){
+		console.log("****search_tomorrow onclick event****");	
+		selectTab("tab-search"); 
+		if (hasSearchChanged == true ) {
+			newMap(myLatLng, searchRadius, "tomorrow");
+		}
+	});
+	
+	dojo.query('#search_settings').onclick( function(evt){
+		console.log("****search_settings onclick event****");
+		selectTab("tab-settings");
+	});
+	
+	dojo.query('#tab-search').onfocus( function(evt){
+		console.log("****tab-search onFocus event****");
+		selectTab("tab-search"); 
+		if (hasSearchChanged == true ) {
+			newMap(myLatLng, searchRadius, "all");
+		}
+	});
+	
+	dojo.query('#tab-list').onfocus( function(evt){ 
+		console.log("****tab-list onFocus event****");	
+		selectTab("tab-list");
+	});
+	
+	dojo.query('#tab-setting').onfocus( function(evt){ 
+		console.log("****tab-setting onFocus event****");	
+		selectTab("tab-setting");
+	});
+	
+	// Set the height of the map.. This shouldnt change on a mobile device
+	var topBarHeight = document.getElementById('topBar').clientHeight;
+	var tabBarHeight = document.getElementById('tabBar').clientHeight;
+	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
+	document.getElementById("map_canvas").style.height = newHeight + "px";	
+	console.log("=========Map div height = " + newHeight + "px ==========");
 	// Initialise the map
-	newMap(myLatLng, searchRadius, "all");
+//	if (hasSearchChanged == true) {
+//		newMap(myLatLng, searchRadius, "all");
+//	}
 });			
 

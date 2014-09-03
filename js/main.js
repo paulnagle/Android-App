@@ -4,9 +4,10 @@ var myLatLng = new L.latLng(53.341318, -6.270205); // Irish Service Office
 var circle = null;
 var currentLocationMarker = null;
 var searchRadius = 25;  // default to 25km
+var days;
 var isMapSpinning = false;
-var hasSearchChanged = true; // We only want to run a new search if the search settings have changed.
- 
+var hasSearchChanged = "true"; // We only want to run a new search if the search settings have changed.
+var markerClusterer = null; 
 // Store these in an array that we can save the state of?
 var searchSun = 1;
 var searchMon = 1;
@@ -53,8 +54,15 @@ function deleteMap() {
 	if (currentLocationMarker) {
 		delete currentLocationMarker;
 	}
-
+	
+	// Remove the markerClusterer layer from the map
+	if (markerClusterer) {
+		map.removeLayer(markerClusterer);	
+	}
+	
 	if (map) {
+	console.log("****Running map.remove()***");
+		delete map;	
 		map.remove();
 	}
 	
@@ -62,42 +70,76 @@ function deleteMap() {
 	if (isMapSpinning) {
 		spinMap(false);
 	}
+	
+	// now delete the old Map container
+	var oldMapContainer = document.getElementById("map_canvas");
+	var mapContainerParent = oldMapContainer.parentNode;
+	mapContainerParent.removeChild(oldMapContainer);
+
+	// recreate this <div id="map_canvas" style="width: 100%"></div>
+	var newMapContainer = document.createElement('div');
+	newMapContainer.setAttribute("id", "map_canvas");
+	newMapContainer.style.cssText = 'width: 100%';
+	mapContainerParent.appendChild(newMapContainer);
+	// Set the height of the map.. 
+	var topBarHeight = document.getElementById('topBar').clientHeight;
+	var tabBarHeight = document.getElementById('tabBar').clientHeight;
+	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
+	document.getElementById("map_canvas").style.height = newHeight + "px";	
+	console.log("=========Map div height = " + newHeight + "px ==========");
+	
+	}
+
+function initMap() {
+	console.log("****Running initMap()***");
+
+	map = L.map('map_canvas');
+	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+
+	console.log("****map.setView****" + myLatLng);		
+	map.setView(myLatLng, 9);
+	
 }
 
 // This function creates a new map, adds the Circle, the current location marker and
 // then runs a new search.
-function newMap(latLng, radius, days) {
+function newMap() {
 	console.log("****Running newMap()***");
+	
 
+	
 	deleteMap();
-	
-	console.log("****creating map****");
-	map = L.map('map_canvas');
-	
+
+	map = L.map('map_canvas'); // 
+		
 	map.on('load', function(e) {  
 		console.log("****map load event****");
 
-		circle = L.circle(latLng, radius * 1000, {fillOpacity: 0.1});
+		circle = L.circle(myLatLng, searchRadius * 1000, {fillOpacity: 0.1});
 		circle.addTo(map);
-		map.fitBounds(circle.getBounds());  		
+		var circleBounds = new L.LatLngBounds;
+		circleBounds = circle.getBounds();
+		map.fitBounds(circleBounds);  		
 	
-		currentLocationMarker = new L.marker(latLng, {draggable: true, icon: markerIcon}).addTo(map);
+		currentLocationMarker = new L.marker(myLatLng, {draggable: true, icon: markerIcon}).addTo(map);
 		currentLocationMarker.bindPopup("This is where you are searching from. Drag this marker to search in another location");
 		currentLocationMarker.on('dragend', function(e){
 			myLatLng = e.target.getLatLng();
-			hasSearchChanged = true;
-			newMap(myLatLng, radius, days);
+			hasSearchChanged = "true";
+			newMap();
 		}); 
 		runSearch(days);
-    });
-	
+	});
+		
 	console.log("****Adding tile Layer to Map****");	
 	L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 		attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
-	
-	console.log("****map.setView****");		
-	map.setView(latLng, 9);
+
+	console.log("****map.setView****" + myLatLng);		
+	map.setView(myLatLng, 9);
 }
 
 // This function reads the address in the locTextBox and does a geocode search for that location
@@ -137,12 +179,11 @@ function renderGeocode(response) {
 		seconds = seconds < 10 ? '0'+seconds : seconds;
 		document.getElementById("geoLocationLegend").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;	
 		myLatLng = L.latLng(geoCodeResult.latLng.lat, geoCodeResult.latLng.lng);
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 	} else {
 		document.getElementById("geoLocationLegend").innerHTML = "Location not found!";	
 	}
 	
-	currentLocationMarker.setLatLng(myLatLng);
 	spinner.stop();
 	document.getElementById('settingsUL').style.opacity="1";
 }
@@ -180,6 +221,7 @@ function getCurrentGPSLocation() {
 	document.getElementById('settingsUL').style.opacity=".3";
 	
 	function setLocation(location) {
+	    console.log("****GPS location found");
 		var d = new Date(); 
 		hours = d.getHours(); 
 		hours = hours < 10 ? '0'+hours : hours;
@@ -187,17 +229,17 @@ function getCurrentGPSLocation() {
 		minutes = minutes < 10 ? '0'+minutes : minutes;
 		seconds = d.getSeconds(); 
 		seconds = seconds < 10 ? '0'+seconds : seconds;
-		myLatLng = L.latLng(location.coords.latitude, location.coords.longitude);
 		document.getElementById("locResult").innerHTML = "Location updated at " + hours + ":" + minutes + ":" + seconds;
-		hasSearchChanged = true;
-//		if (hasSearchChanged == true) { // ???
-//			newMap(myLatLng, searchRadius, "all");
-//		}
 		spinner.stop();
 		document.getElementById('settingsUL').style.opacity="1";
+
+		myLatLng = L.latLng(location.coords.latitude, location.coords.longitude);
+		hasSearchChanged = "true";
+//		newMap();
 	}
 	
 	function noLocation() {
+	    console.log("****GPS location NOT found");
 		document.getElementById("locResult").innerHTML = "Location not found";
 		spinner.stop();
 		document.getElementById('settingsUL').style.opacity="1";	
@@ -295,15 +337,17 @@ function runSearch(day) {
 			timeout: 10000,
 			error: function(e){
 				spinMap(false);
-				alert("Search error! This app relies on your internet connection. Press the Map button to try again." + e);
+				alert("Search error! This app relies on your internet connection. Press the Map button to try again. [" + e + "]");
 				},
 			load: function(data){				
 				var i = 0;
-				var markerClusterer = new L.markerClusterGroup({showCoverageOnHover: false, 
+				if (markerClusterer) {
+					delete markerClusterer;
+				}
+				markerClusterer = new L.markerClusterGroup({showCoverageOnHover: false, 
 																removeOutsideVisibleBounds: false});
 				dojo.forEach(data, function(datum) { 
-					i++;
-					
+					i++;					
 					markerContent = "<p><b>" + datum.meeting_name + "</b></p>";
 					markerContent += "<p><i>" + dayOfWeekAsString(datum.weekday_tinyint) 
 					markerContent += "&nbsp;" + datum.start_time.substring(0, 5) + "</i>&nbsp;&nbsp;";
@@ -336,7 +380,7 @@ function runSearch(day) {
 				map.addLayer(markerClusterer);	
 				document.getElementById("list_heading").innerHTML= '<h3 align="center">' + i + '&nbsp;Meetings</h3>';
 				registry.byId("tab-list").set('badge', i);
-				hasSearchChanged = false; 
+				hasSearchChanged = "false"; 
 			}
 		}
 		var deferred = dojo.xhrGet(xhrArgs);
@@ -402,7 +446,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 		"intermediateChanges" : true,
 		"style"	:	"width:90%;",
 		"onChange" : function(newValue){ 
-			hasSearchChanged = true;		
+			hasSearchChanged = "true";		
 			searchRadius =  newValue; 
 			document.getElementById('radiusLabel').innerHTML= "&nbsp;Search radius =&nbsp;" + searchRadius + "&nbsp;kms";	
 		}
@@ -415,7 +459,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_sun.startup();
 	var sw_sun_listen = registry.byId("sw_sun");
 	sw_sun_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchSun = -1;
 		} else {
@@ -428,7 +472,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_mon.startup();
 	var sw_mon_listen = registry.byId("sw_mon");
 	sw_mon_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchMon = -1;
 		} else {
@@ -441,7 +485,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_tue.startup();
 	var sw_tue_listen = registry.byId("sw_tue");
 	sw_tue_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchTue = -1;
 		} else {
@@ -454,7 +498,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_wed.startup();
 	var sw_wed_listen = registry.byId("sw_wed");
 	sw_wed_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchWed = -1;
 		} else {
@@ -467,7 +511,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_thu.startup();
 	var sw_thu_listen = registry.byId("sw_thu");
 	sw_thu_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchThu = -1;
 		} else {
@@ -480,7 +524,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_fri.startup();
 	var sw_fri_listen = registry.byId("sw_fri");
 	sw_fri_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchFri = -1;
 		} else {
@@ -493,7 +537,7 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	sw_sat.startup();					
 	var sw_sat_listen = registry.byId("sw_sat");
 	sw_sat_listen.on("stateChanged", function(newState){
-		hasSearchChanged = true;
+		hasSearchChanged = "true";
 		if (newState == "off") {
 			searchSat = -1;
 		} else {
@@ -504,24 +548,27 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	dojo.query('#search_all').onclick( function(evt){
 		console.log("****search_all onclick event****");
 		selectTab("tab-search"); 
-		if (hasSearchChanged == true ) {
-			newMap(myLatLng, searchRadius, "all");
+		days = "all";
+		if (hasSearchChanged == "true" ) {
+			newMap();
 		}
 	});
 	
 	dojo.query('#search_today').onclick( function(evt){
 		console.log("****search_today onclick event****");	
+		days = "today";
 		selectTab("tab-search"); 
-		if (hasSearchChanged == true ) {		
-			newMap(myLatLng, searchRadius, "today");
+		if (hasSearchChanged == "true" ) {		
+			newMap();
 		}
 	});
 	
 	dojo.query('#search_tomorrow').onclick( function(evt){
-		console.log("****search_tomorrow onclick event****");	
+		console.log("****search_tomorrow onclick event****");
+		days = "tomorrow";
 		selectTab("tab-search"); 
-		if (hasSearchChanged == true ) {
-			newMap(myLatLng, searchRadius, "tomorrow");
+		if (hasSearchChanged == "true" ) {
+			newMap();
 		}
 	});
 	
@@ -531,10 +578,10 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 	});
 	
 	dojo.query('#tab-search').onfocus( function(evt){
-		console.log("****tab-search onFocus event****");
+		console.log("****tab-search onFocus event****" + hasSearchChanged);
 		selectTab("tab-search"); 
-		if (hasSearchChanged == true ) {
-			newMap(myLatLng, searchRadius, "all");
+		if (hasSearchChanged == "true" ) {
+			newMap();
 		}
 	});
 	
@@ -548,15 +595,8 @@ function(	dom, domConstruct, on, ready, parser, mobile, FormLayout, ScrollableVi
 		selectTab("tab-setting");
 	});
 	
-	// Set the height of the map.. This shouldnt change on a mobile device
-	var topBarHeight = document.getElementById('topBar').clientHeight;
-	var tabBarHeight = document.getElementById('tabBar').clientHeight;
-	var newHeight = window.innerHeight - ( topBarHeight + tabBarHeight);
-	document.getElementById("map_canvas").style.height = newHeight + "px";	
-	console.log("=========Map div height = " + newHeight + "px ==========");
+
 	// Initialise the map
-//	if (hasSearchChanged == true) {
-//		newMap(myLatLng, searchRadius, "all");
-//	}
+	initMap();
 });			
 
